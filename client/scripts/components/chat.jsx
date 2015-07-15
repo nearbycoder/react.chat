@@ -1,5 +1,6 @@
 var React = require("react");
 var Chat = require("./chat.jsx");
+
 var helper = require("../helpers/query-params.jsx");
 var Chat = React.createClass({
 	render: function(){
@@ -9,9 +10,9 @@ var Chat = React.createClass({
 					<div className="userName small-2 large-2 columns">
 					{this.props.userName}
 					</div>
-					<div className="large-9 small-9 columns userMessage">
+					<pre className="large-9 small-9 columns userMessage">
 						 {this.props.children}
-					</div>
+					</pre>
 				</div>
 			</div>
 		)

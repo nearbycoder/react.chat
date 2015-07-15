@@ -13,9 +13,14 @@ body {
 	background-color: $primary-bgcolor;
 	color: $font-color;
 }
-.chatBox {
-	margin-bottom: 50px;
+.sideMessage {
+	background-color: $primary-bgcolor;
+	border-right: 1px solid $font-color;
+	@media (max-width: 600px) {
+  	border-right: 0px solid $font-color;
+  }
 }
+
 .userChat {
 	padding:0px 0;
 	margin: 0px;
@@ -74,6 +79,9 @@ p {
 .mainWindow {
 
 }
+pre{
+    white-space: pre-wrap;
+}
 
 .chatInput {
 	position: fixed;
@@ -83,7 +91,7 @@ p {
 	textarea {
 		resize: none;
 		margin: 0;
-		border-left: 1px solid $font-color;
+		border-left: 0px;
 		border-right: 0px;
 		border-top: 1px solid $font-color;
 		border-bottom: 1px solid $font-color;

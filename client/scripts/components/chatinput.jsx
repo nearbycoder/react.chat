@@ -4,6 +4,10 @@ $(function() {
 $('#userChat').on( 'change keyup keydown paste cut', 'textarea', function (){
 	console.log(this.scrollHeight)
     $(this).height(0).height(this.scrollHeight - 20);
+    $(".chatBox").css('margin-bottom', this.scrollHeight);
+    if($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
+    	$('html, body').scrollTop( $(document).height());
+    }
     console.log(true);
 }).find( 'textarea' ).change();
 });
@@ -28,8 +32,9 @@ var ChatInput = React.createClass({
 			<div className="chatInput">
 				<div className="row">
 					<div className="large-12 columns mainContainer">
-						<div id="userChat" class="small-12 large-12 columns userChat">
-							<textarea rows="1" ref="message" className="large-9 large-offset-2 small-12 columns userMessage" onKeyDown={this.addMessage}/>
+						<div id="userChat" className="small-12 large-12 columns userChat">
+							<div className="large-2 columns sideMessage"></div>
+							<textarea rows="1" ref="message" className="large-9 small-12 columns userMessage" onKeyDown={this.addMessage}/>
 						</div>
 					</div>
 				</div>
