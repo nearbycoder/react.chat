@@ -1,0 +1,90 @@
+//font imports
+@import url(http://fonts.googleapis.com/css?family=Press+Start+2P);
+
+//main colors
+$primary-bgcolor: #20201D;
+$font-color: #a6a28c;
+$user-color: #B854D4;
+
+
+$user-font-size: 12px;
+
+body {
+	background-color: $primary-bgcolor;
+	color: $font-color;
+	position: relative;
+	height: 100vh;
+}
+.chatBox {
+	margin: 4px 0;
+}
+.userChat {
+	margin:4px 0;
+}
+.userName {
+	font-family: 'DejaVu Sans Mono', monospace;
+	font-size: $user-font-size;
+	color: $user-color;
+  text-align: right;
+  border-right: 2px solid $font-color;
+  @media (max-width: 600px) {
+  	border-right: 0px solid $font-color;
+  }
+  @media (max-width: 400px) {
+  	float: left;
+  	width: auto;
+  	padding-right: 5px;
+  	padding-bottom: 2px;
+  }
+  &:hover {
+  	text-decoration: underline;
+  	cursor: pointer;
+  }
+}
+.userMessage {
+	font-family: 'DejaVu Sans Mono', monospace;
+	font-size: $user-font-size;
+	text-align: left;
+	float: left!important;
+	@media (max-width: 400px) {
+		float: left;
+  	width: auto;
+  	word-wrap: normal;
+  }
+}
+
+h1,h2,h3,h4,h5 {
+	color: $font-color;
+	font-family: 'Press Start 2P', cursive;
+}
+
+p {
+	  font-family: monospace;
+	  font-size: 12px;
+}
+.title {
+	text-align: center;
+}
+.mainWindow {
+
+}
+
+.chatInput {
+	position: fixed;
+	bottom: 0px;
+	left:0px;
+	width: 100vw;
+	height: 40px;
+	input {
+		height: 40px;
+		background-color: $primary-bgcolor;
+		color: $font-color;
+		&:focus {
+			background-color: $primary-bgcolor;
+		}
+	}
+	@media (max-width: 400px) {
+  	width: 100%;
+  	margin-bottom: 5px;
+  }
+}
