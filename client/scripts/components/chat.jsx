@@ -6,10 +6,10 @@ var Chat = React.createClass({
 		return(
 			<div>
 				<div className="small-12 large-12 columns userChat">
-					<div className="userName small-3 large-3 columns">
+					<div className="userName small-2 large-2 columns">
 					{this.props.userName}
 					</div>
-					<div className="large-6 small-6 columns userMessage">
+					<div className="large-9 small-9 columns userMessage">
 						 {this.props.children}
 					</div>
 				</div>

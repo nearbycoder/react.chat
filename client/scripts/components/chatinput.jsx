@@ -1,22 +1,39 @@
 var React = require("react");
+var $ = require("jquery");
+$(function() {
+$('#userChat').on( 'change keyup keydown paste cut', 'textarea', function (){
+	console.log(this.scrollHeight)
+    $(this).height(0).height(this.scrollHeight - 20);
+    console.log(true);
+}).find( 'textarea' ).change();
+});
+
 var ChatInput = React.createClass({
 	addMessage: function(event){
-         if(event.keyCode == 13){
-            var message = React.findDOMNode(this.refs.message).value;
-            this.props.onKeyDown(message);
-            React.findDOMNode(this.refs.message).value = "";
-         }
-     },
+		var message = React.findDOMNode(this.refs.message).value;
+		if(event.keyCode == 13 && !event.shiftKey){
+			event.preventDefault();
+		}
+		if(message.length != ""){
+       if(event.keyCode == 13 && !event.shiftKey){
+          this.props.onKeyDown(message);
+          $(React.findDOMNode(this.refs.message)).val("").focus(); 
+          event.preventDefault();
+       }
+    } 
+  },
 	render: function(){
 		
 		return(
-				<div className="chatInput">
-					<div className="row">
-						<div className="large-6 large-offset-3 columns">
-						<input type="text" ref="message" onKeyDown={this.addMessage}/>
+			<div className="chatInput">
+				<div className="row">
+					<div className="large-12 columns mainContainer">
+						<div id="userChat" class="small-12 large-12 columns userChat">
+							<textarea rows="1" ref="message" className="large-9 large-offset-2 small-12 columns userMessage" onKeyDown={this.addMessage}/>
 						</div>
 					</div>
-	      </div>
+				</div>
+			</div>
 		)
 	}
 });

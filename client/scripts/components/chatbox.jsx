@@ -54,8 +54,12 @@ var ChatBox = React.createClass({
 			return false;
 		}
 		return(
-			<div className="row">
-			{this.state.messages.map(this.eachChat)}
+			<div>
+				<div className="row">
+					<div className="large-12 columns mainContainer">
+					{this.state.messages.map(this.eachChat)}
+					</div>
+				</div>
 			<ChatInput onKeyDown={this.addMessage}/>
 			</div>
 		)

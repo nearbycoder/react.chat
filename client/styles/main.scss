@@ -14,25 +14,32 @@ body {
 	color: $font-color;
 }
 .chatBox {
-	margin: 4px 0 65px;
+	margin-bottom: 50px;
 }
 .userChat {
-	margin:4px 0;
+	padding:0px 0;
+	margin: 0px;
+	display: flex;
+	@media (max-width: 600px) {
+		display: block;
+	}
+}
+.mainWindow {
+	position:relative;
 }
 .userName {
 	font-family: 'DejaVu Sans Mono', monospace;
 	font-size: $user-font-size;
 	color: $user-color;
+	padding: 8px 4px;
+	display:inline-block;
   text-align: right;
-  border-right: 2px solid $font-color;
+  border-right: 1px solid $font-color;
   @media (max-width: 600px) {
   	border-right: 0px solid $font-color;
-  }
-  @media (max-width: 400px) {
   	float: left;
   	width: auto;
-  	padding-right: 5px;
-  	padding-bottom: 2px;
+  	min-width: 50px;
   }
   &:hover {
   	text-decoration: underline;
@@ -43,6 +50,7 @@ body {
 	font-family: 'DejaVu Sans Mono', monospace;
 	font-size: $user-font-size;
 	text-align: left;
+	padding: 8px 6px;
 	float: left!important;
 	@media (max-width: 400px) {
 		float: left;
@@ -70,19 +78,23 @@ p {
 .chatInput {
 	position: fixed;
 	bottom: 0px;
-	left:0px;
-	width: 100vw;
-	height: 40px;
-	input {
-		height: 40px;
+	left: 0px;
+	width: 100%;
+	textarea {
+		resize: none;
+		margin: 0;
+		border-left: 1px solid $font-color;
+		border-right: 0px;
+		border-top: 1px solid $font-color;
+		border-bottom: 1px solid $font-color;
 		background-color: $primary-bgcolor;
 		color: $font-color;
 		&:focus {
 			background-color: $primary-bgcolor;
 		}
+		@media (max-width: 400px) {
+			width: 100%;
+ 	  }
 	}
-	@media (max-width: 400px) {
-  	width: 100%;
-  	margin-bottom: 5px;
-  }
+
 }
