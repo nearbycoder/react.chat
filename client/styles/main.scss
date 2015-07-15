@@ -12,11 +12,9 @@ $user-font-size: 12px;
 body {
 	background-color: $primary-bgcolor;
 	color: $font-color;
-	position: relative;
-	height: 100vh;
 }
 .chatBox {
-	margin: 4px 0;
+	margin: 4px 0 65px;
 }
 .userChat {
 	margin:4px 0;

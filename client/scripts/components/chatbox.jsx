@@ -1,31 +1,58 @@
 var React = require("react");
 var Chat = require("./chat.jsx");
+var $ = require("jquery");
 var helper = require("../helpers/query-params.jsx");
 var ChatInput = require("./chatinput.jsx");
+
+
 var ChatBox = React.createClass({
 	getInitialState: function() {
 		return {
-			messages: [{user: 'ted', message: 'hellow World'},
-								 {user: 'ted', message: 'hellow World'},
-								 {user: 'nearbygamer', message: 'how you ever going to know'}]
+			messages: []
 		};
 	},
+	componentWillMount: function() {
+		if(helper.getParameterByName("room") && !localStorage.getItem('nickName')){
+			var nickName = prompt("Please enter nickname");
+			if (nickName != null) {
+			    localStorage.setItem('nickName', nickName);
+			}
+		}
+	},
 	componentDidUpdate: function(nextProps) {
-	  console.log('next');
+		if(this.scroll){
+    		$('html, body').scrollTop( $(document).height() );
+    	}
 	},
 	eachChat: function(message, i) {
 		return (
-			<Chat 
+			<Chat
 				index={i}
+				key={i}
 				userName={message.user}
 			>{message.message}</ Chat>
 		)
 	},
 	addMessage: function(message){
-				console.log(this.state)
-       this.setState({messages: this.state.messages.concat({user : 'josh', message: message})});
-   },
+		var nickName = localStorage.getItem('nickName');
+		if(!nickName){
+			var nickName = prompt("Please enter nickname");
+			if (nickName != null) {
+			    localStorage.setItem('nickName', nickName);
+			}
+		}else{
+			if($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
+		    this.scroll = true;
+		   } else {
+		   	this.scroll = false;
+		   }
+    	this.setState({messages: this.state.messages.concat({user : nickName, message: message})});
+    }
+  },
 	render: function(){
+		if(!helper.getParameterByName("room")){
+			return false;
+		}
 		return(
 			<div className="row">
 			{this.state.messages.map(this.eachChat)}
