@@ -6,6 +6,7 @@ var ChatInput = require("./chatinput.jsx");
 var io = require("socket.io-client");
 var socket = io('http://127.0.0.1:6060');
 var moment = require("moment");
+var _room = helper.getParameterByName("room");
 
 var ChatBox = React.createClass({
 	getInitialState: function() {
@@ -15,14 +16,50 @@ var ChatBox = React.createClass({
 	},
 	componentWillMount: function() {
 		var _this = this;
-		if(helper.getParameterByName("room") && !localStorage.getItem('nickName')){
+
+		if(_room && !localStorage.getItem('nickName')){
 			var nickName = prompt("Please enter nickname");
 			if (nickName != null) {
 			    localStorage.setItem('nickName', nickName);
 			}
 		}
-		socket.on(helper.getParameterByName("room"), function(msg){
-		  _this.setState({messages: _this.state.messages.concat({user : msg.nickName, message: msg.message, time: msg.time})});
+		//show user joined status after checking server for username duplicates
+		socket.emit('join', _room, localStorage.getItem('nickName'), moment().format('MMMM Do YYYY, h:mm:ss a'));
+
+		//message room io.emit('message', room, nickname, message,  time);
+		socket.on('message', function(room, user, message, time){
+			if(room == _room){
+		  _this.setState({messages: _this.state.messages.concat({user : user, message: message, time: time})});
+			}
+		});
+
+		//prompt user if username already is in room io.emit('user.prompt');
+		socket.on('user.prompt', function(){
+			var nickName = prompt("Nickname already exists please enter another one?");
+			if (nickName != null) {
+			    localStorage.setItem('nickName', nickName);
+			    socket.emit('join', _room, localStorage.getItem('nickName'), moment().format('MMMM Do YYYY, h:mm:ss a'));
+			}
+		});
+
+		//join room io.emit('user.join', room, nickname, time);
+		socket.on('user.join', function(room, nickName, time){
+			if(room == _room){
+		  	_this.setState({messages: _this.state.messages.concat({user : '*', message: nickName + " has joined", time: time})});
+		  }
+		});
+
+		//join room io.emit('user.join', room, nickname, time);
+		socket.on('getUserList', function(userList){
+			console.log(userList)
+		  	_this.setState({messages: _this.state.messages.concat({user : '*', message: "current users in room " +userList, time: moment().format('MMMM Do YYYY, h:mm:ss a')})});
+		});
+
+		//disconnect user and send disconnect notice to state socket.on('disconnect', function(room,user));
+		socket.on('disconnect', function(room, user){
+			if(room == _room){
+		  	_this.setState({messages: _this.state.messages.concat({user : '*', message: user + " has left", time: moment().format('MMMM Do YYYY, h:mm:ss a')})});
+		  }
 		});
 	},
 	componentDidUpdate: function(nextProps) {
@@ -54,7 +91,7 @@ var ChatBox = React.createClass({
 		   	this.scroll = false;
 		   }
 		  var time = moment().format('MMMM Do YYYY, h:mm:ss a');
-		  socket.emit('room', {room: helper.getParameterByName("room"), nickName: nickName, message:message, time: time});
+		  socket.emit('message', _room, nickName, message, time);
     }
   },
 	render: function(){
