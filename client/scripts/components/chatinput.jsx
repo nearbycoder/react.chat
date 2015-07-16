@@ -2,13 +2,11 @@ var React = require("react");
 var $ = require("jquery");
 $(function() {
 $('#userChat').on( 'change keyup keydown paste cut', 'textarea', function (){
-	console.log(this.scrollHeight)
     $(this).height(0).height(this.scrollHeight - 20);
     $(".chatBox").css('margin-bottom', this.scrollHeight);
     if($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
     	$('html, body').scrollTop( $(document).height());
     }
-    console.log(true);
 }).find( 'textarea' ).change();
 });
 

@@ -7,9 +7,9 @@ var Chat = React.createClass({
 		return(
 			<div>
 				<div className="small-12 large-12 columns userChat">
-					<div className="userName small-2 large-2 columns">
+					<a title={this.props.time} className="userName small-2 large-2 columns">
 					{this.props.userName}
-					</div>
+					</a>
 					<pre className="large-9 small-9 columns userMessage">
 						 {this.props.children}
 					</pre>

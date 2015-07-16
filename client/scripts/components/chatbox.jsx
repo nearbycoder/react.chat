@@ -3,7 +3,9 @@ var Chat = require("./chat.jsx");
 var $ = require("jquery");
 var helper = require("../helpers/query-params.jsx");
 var ChatInput = require("./chatinput.jsx");
-
+var io = require("socket.io-client");
+var socket = io('http://127.0.0.1:6060');
+var moment = require("moment");
 
 var ChatBox = React.createClass({
 	getInitialState: function() {
@@ -12,12 +14,16 @@ var ChatBox = React.createClass({
 		};
 	},
 	componentWillMount: function() {
+		var _this = this;
 		if(helper.getParameterByName("room") && !localStorage.getItem('nickName')){
 			var nickName = prompt("Please enter nickname");
 			if (nickName != null) {
 			    localStorage.setItem('nickName', nickName);
 			}
 		}
+		socket.on(helper.getParameterByName("room"), function(msg){
+		  _this.setState({messages: _this.state.messages.concat({user : msg.nickName, message: msg.message, time: msg.time})});
+		});
 	},
 	componentDidUpdate: function(nextProps) {
 		if(this.scroll){
@@ -29,6 +35,7 @@ var ChatBox = React.createClass({
 			<Chat
 				index={i}
 				key={i}
+				time={message.time}
 				userName={message.user}
 			>{message.message}</ Chat>
 		)
@@ -46,7 +53,8 @@ var ChatBox = React.createClass({
 		   } else {
 		   	this.scroll = false;
 		   }
-    	this.setState({messages: this.state.messages.concat({user : nickName, message: message})});
+		  var time = moment().format('MMMM Do YYYY, h:mm:ss a');
+		  socket.emit('room', {room: helper.getParameterByName("room"), nickName: nickName, message:message, time: time});
     }
   },
 	render: function(){
