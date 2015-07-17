@@ -19,7 +19,6 @@ var ChatBox = React.createClass({
 		if(_room && !localStorage.getItem('nickName')){
 			var nickName = prompt("Please enter nickname");
 			if (nickName != null && nickName != "") {
-				console.log(nickName)
 			    localStorage.setItem('nickName', nickName);
 			}
 		}
@@ -28,6 +27,11 @@ var ChatBox = React.createClass({
 
 		//message room io.emit('message', room, nickname, message,  time);
 		socket.on('message', function(room, user, message, time){
+			if($(window).scrollTop() + $(window).height() > $(document).height() - 200) {
+		    this.scroll = true;
+		   } else {
+		   	this.scroll = false;
+		   }
 			if(room == _room){
 		  _this.setState({messages: _this.state.messages.concat({user : user, message: message, time: time})});
 			}
@@ -92,11 +96,6 @@ var ChatBox = React.createClass({
 			    localStorage.setItem('nickName', nickName);
 			}
 		}else{
-			if($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
-		    this.scroll = true;
-		   } else {
-		   	this.scroll = false;
-		   }
 		  socket.emit('message', _room, nickName, message);
     }
   },
