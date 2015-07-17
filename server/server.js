@@ -1,6 +1,7 @@
 var io = require('socket.io')(6060);
 var _ = require('underscore');
 var moment = require("moment");
+var config = require("./config");
 var allClients = [];
 var userList = [];
 io.on('connection', function(socket){
@@ -52,26 +53,24 @@ io.on('connection', function(socket){
 	//message current room the user is in
   socket.on('message', function(room, user, message){
     var time = moment().format('MMMM Do YYYY, h:mm:ss a');
-    io.emit('message', room, user, message, time);
-
-
     var cmd = parseArgs(message);
     
     switch(cmd){
+      //prompt user to reset their nickname
       case "/nick":
         io.sockets.connected[allClients[i].id].emit('user.prompt');
       break;
-
+      //list all commands in room
       case "/help":
-        io.emit('message', room, '*', "[/nick : reset your nickname]", time);
+        io.sockets.connected[allClients[i].id].emit('message', room, '*', config.commands, time);
       break;
+      //list all users in current room
+      case "/list":
+        io.sockets.connected[allClients[i].id].emit('message', room, '*', 'Current users in room are ' + userList[room], time);
+      break;
+      default:
+        io.emit('message', room, user, message, time);
     }
-
-
-
-
-
-
   });
 
   //send disconnect notice to chat room for current socket username

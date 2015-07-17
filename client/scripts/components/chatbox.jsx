@@ -5,7 +5,7 @@ var helper = require("../helpers/query-params.jsx");
 var ChatInput = require("./chatinput.jsx");
 var io = require("socket.io-client");
 var socket = io('http://127.0.0.1:6060');
-var _room = helper.getParameterByName("room");
+var _room = helper.getRoom("room");
 
 var ChatBox = React.createClass({
 	getInitialState: function() {
@@ -100,7 +100,7 @@ var ChatBox = React.createClass({
     }
   },
 	render: function(){
-		if(!helper.getParameterByName("room")){
+		if(!_room){
 			return false;
 		}
 		return(

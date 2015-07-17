@@ -2,7 +2,7 @@ var React = require("react");
 var helper = require("../helpers/query-params.jsx");
 var Title = React.createClass({
 	render: function(){
-		if(helper.getParameterByName("?")){
+		if(helper.getRoom()){
 			return false;
 		}
 		return(
