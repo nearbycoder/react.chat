@@ -6,6 +6,7 @@ var ChatInput = require("./chatinput.jsx");
 var io = require("socket.io-client");
 var socket = io('http://127.0.0.1:6060');
 var _room = helper.getRoom("room");
+var highlight = require("highlight.js");
 
 var ChatBox = React.createClass({
 	getInitialState: function() {
@@ -15,7 +16,6 @@ var ChatBox = React.createClass({
 	},
 	componentWillMount: function() {
 		var _this = this;
-
 		if(_room && !localStorage.getItem('nickName')){
 			var nickName = prompt("Please enter nickname");
 			if (nickName != null && nickName != "") {
@@ -75,8 +75,11 @@ var ChatBox = React.createClass({
 	},
 	componentDidUpdate: function(nextProps) {
 		if(this.scroll){
-    		$('html, body').scrollTop( $(document).height() );
-    	}
+    	$('html, body').scrollTop( $(document).height() );
+    }
+    highlight.highlightBlock($( "code:last" ).get(0));
+
+
 	},
 	eachChat: function(message, i) {
 		return (

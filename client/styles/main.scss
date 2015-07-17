@@ -2,9 +2,9 @@
 @import url(http://fonts.googleapis.com/css?family=Press+Start+2P);
 
 //main colors
-$primary-bgcolor: #20201D;
+$primary-bgcolor: #282B2E;
 $font-color: #a6a28c;
-$user-color: #B854D4;
+$user-color: #6897BB;
 
 
 $user-font-size: 12px;
@@ -19,6 +19,12 @@ body {
 	@media (max-width: 600px) {
   	border-right: 0px solid $font-color;
   }
+}
+.hljs {
+	padding: 1px 1px!important;
+}
+code {
+	color: #a9b7c6;
 }
 
 .userChat {

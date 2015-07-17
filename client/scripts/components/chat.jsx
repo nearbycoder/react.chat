@@ -11,7 +11,7 @@ var Chat = React.createClass({
 					{this.props.userName}
 					</a>
 					<pre className="large-9 small-9 columns userMessage">
-						 {this.props.children}
+						 <code>{this.props.children}</code>
 					</pre>
 				</div>
 			</div>
