@@ -78,7 +78,7 @@ var ChatBox = React.createClass({
 		  }
 		});
 	},
-	componentDidUpdate: function(nextProps) {
+	componentDidUpdate: function(prevProps, prevState) {
 		if(this.scroll){
     	$('html, body').scrollTop( $(document).height() );
     }
