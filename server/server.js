@@ -51,7 +51,7 @@ io.on('connection', function(socket){
   });
 
 	//message current room the user is in
-  socket.on('message', function(room, user, message){
+  socket.on('message', function(room, user, message, isCode){
     var time = moment().format('MMMM Do YYYY, h:mm:ss a');
     var cmd = parseArgs(message);
     
@@ -69,7 +69,7 @@ io.on('connection', function(socket){
         io.sockets.connected[allClients[i].id].emit('message', room, '*', 'Current users in room are ' + userList[room], time);
       break;
       default:
-        io.emit('message', room, user, message, time);
+        io.emit('message', room, user, message, time, isCode);
     }
   });
 

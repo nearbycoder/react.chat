@@ -32,7 +32,7 @@ var ChatInput = React.createClass({
 					<div className="large-12 columns mainContainer">
 						<div id="userChat" className="small-12 large-12 columns userChat">
 							<div className="large-2 columns sideMessage"></div>
-							<textarea rows="1" ref="message" className="large-9 small-12 columns userMessage" onKeyDown={this.addMessage}/>
+							<textarea rows="1" ref="message" className="large-9 small-12 columns userMessage chat" onKeyDown={this.addMessage}/>
 						</div>
 					</div>
 				</div>
