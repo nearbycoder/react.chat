@@ -17,9 +17,10 @@ if(module.hot) {
 var Title = require("./templates/title.jsx");
 var ChatBox = require("./components/chatbox.jsx");
 
-
 var App = React.createClass({
-
+	componentWillMount: function() {
+		socket.on('connect', function(){});
+	},
 	getInitialState: function(){
 		return null;
 	},
@@ -31,24 +32,9 @@ var App = React.createClass({
 			</div>
 		)
 	}
-	
 });
-
-
 
 React.render(
   <App />,
   document.getElementById('main')
 );
-
-
-
-
-
-
-
-
-
-
-
-socket.on('connect', function(){});
