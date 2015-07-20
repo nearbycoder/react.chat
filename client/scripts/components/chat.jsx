@@ -5,7 +5,7 @@ var helper = require("../helpers/query-params.jsx");
 var Chat = React.createClass({
 	tagUser: function(){
 		var username = '@' + this.props.userName;
-		$('.chat').val($('.chat').val()+username);
+		$('.chat').val($('.chat').val()+username).focus();
 	},
 	render: function(){
 		return(

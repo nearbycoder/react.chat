@@ -53,7 +53,8 @@ io.on('connection', function(socket){
 	//message current room the user is in
   socket.on('message', function(room, user, message, isCode){
     var time = moment().format('MMMM Do YYYY, h:mm:ss a');
-    var cmd = parseArgs(message);
+    var cmd = parseArgs(message)[0];
+    var usr = parseArgs(message)[1];
     
     switch(cmd){
       //prompt user to reset their nickname
@@ -67,6 +68,25 @@ io.on('connection', function(socket){
       //list all users in current room
       case "/list":
         io.sockets.connected[allClients[i].id].emit('message', room, '*', 'Current users in room are ' + userList[room], time);
+      break;
+      //ability to private message user with /pm <@username> <message>
+      case "/pm":
+        if(typeof usr != "undefined"){
+          if(_.includes(usr, "@")){
+            usr = usr.replace("@", "");
+            var index = userList[room].indexOf(usr);
+            var foundUser = false;
+            allClients.forEach(function(client){
+              if(usr == client.userName){
+                foundUser = true;
+                io.sockets.connected[client.client.id].emit('message', room, user, message, time);
+              }
+            });
+            if(!foundUser){
+              io.sockets.connected[allClients[i].id].emit('message', room, '*', 'user does not exists', time);
+            };
+          };
+        };
       break;
       default:
         io.emit('message', room, user, message, time, isCode);
@@ -98,5 +118,5 @@ io.on('connection', function(socket){
 
 function parseArgs(message){
   var args = message.split(" ");
-  return args[0];
+  return args;
 }
