@@ -34,9 +34,13 @@ io.on('connection', function(socket){
 				userList[room] = [];
 			}
       if(oldNick){
-        var index = userList[room].indexOf(oldNick);
-        userList[room].splice(index, 1);
-        userList[room].push(user);
+        for(list in userList){
+          var index = userList[list].indexOf(oldNick);
+          if(index != -1){
+            userList[list].splice(index, 1);
+            userList[list].push(user);
+          }
+        }
       }
 			if(!_.contains(userList[room], user)){
 				userList[room].push(user);
