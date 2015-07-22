@@ -17,6 +17,7 @@ io.on('connection', function(socket){
     var time = moment().format('MMMM Do YYYY, h:mm:ss a');
   	var userExists = false;
   	var userLog = false;
+    var x = 0;
 
   	//iterate over allClients to check userName for duplicates
   	allClients.forEach(function(client){
@@ -26,7 +27,14 @@ io.on('connection', function(socket){
   	})
   	if(userExists == false && user != null){
   		//send current user to room once no conflicts with users
+      allClients.forEach(function(client){
+        if(user == client.userName){
+          x++;
+        }
+      })
+      if(x <= 1){
 			socket.broadcast.emit('user.join', room, user, time, oldNick);
+      }
 			allClients[i].userName = user;
 			allClients[i].room = room;
 
@@ -105,6 +113,7 @@ io.on('connection', function(socket){
   socket.on('disconnect', function() {
     var time = moment().format('MMMM Do YYYY, h:mm:ss a');
     var s = allClients.indexOf(socket);
+    var x = 0;
     var user = allClients[s].userName;
     var room = allClients[s].room;
     
@@ -112,17 +121,25 @@ io.on('connection', function(socket){
     if(typeof userList[room] != "undefined"){
       for(list in userList){
         var index = userList[list].indexOf(user);
-        if(index != -1){
-          userList[list].splice(index, 1);
+        allClients.forEach(function(client){
+          if(user == client.userName){
+            x++;
+          }
+        })
+        if(x <= 1){
+          if(index != -1){
+            userList[list].splice(index, 1);
+            delete allClients[s];
+
+      
+            //send disconnect message to chat room
+            io.emit('disconnect', room, user, time);
+          }
         }
       }
     }
     
-    delete allClients[s];
-
-      
-    //send disconnect message to chat room
-    io.emit('disconnect', room, user, time);
+    
 
   });
 
