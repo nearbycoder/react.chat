@@ -51,15 +51,6 @@ io.on('connection', function(socket){
   		io.sockets.connected[allClients[i].id].emit('getUserList', userList[room].join(","), time);
 
 		} else if (userExists == true) {
-      if(oldNick){
-        for(list in userList){
-          var index = userList[list].indexOf(oldNick);
-          if(index != -1){
-            userList[list].splice(index, 1);
-            userList[list].push(user);
-          }
-        }
-      }
 			//send prompt to current user/socket connected
 			io.sockets.connected[allClients[i].id].emit('user.prompt');
 		}
