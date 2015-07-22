@@ -1,5 +1,5 @@
 var io = require("socket.io-client");
-var socket = io('http://127.0.0.1:6060');
+var socket = io('http://reactchat.tk:6060');
 var foundation = require("../node_modules/foundation/scss/foundation.scss");
 var styles = require("../styles/main.scss");
 var React = require("react");
