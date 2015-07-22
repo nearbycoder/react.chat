@@ -110,8 +110,12 @@ io.on('connection', function(socket){
     
     //check if room exists and has current disconnect name. If so remove from array
     if(typeof userList[room] != "undefined"){
-      var index = userList[room].indexOf(user);
-      userList[room].splice(index, 1);
+      for(list in userList){
+        var index = userList[list].indexOf(user);
+        if(index != -1){
+          userList[list].splice(index, 1);
+        }
+      }
     }
     
     delete allClients[s];
