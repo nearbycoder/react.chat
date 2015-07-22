@@ -28,11 +28,11 @@ io.on('connection', function(socket){
   	if(userExists == false && user != null){
   		//send current user to room once no conflicts with users
       allClients.forEach(function(client){
-        if(user == client.userName){
+        if(user == client.userName && room == client.room){
           x++;
         }
       })
-      if(x <= 1){
+      if(x <= 0){
 			socket.broadcast.emit('user.join', room, user, time, oldNick);
       }
 			allClients[i].userName = user;
@@ -122,22 +122,21 @@ io.on('connection', function(socket){
       for(list in userList){
         var index = userList[list].indexOf(user);
         allClients.forEach(function(client){
-          if(user == client.userName){
+          if(user == client.userName && room == client.room){
             x++;
           }
         })
         if(x <= 1){
           if(index != -1){
             userList[list].splice(index, 1);
-            delete allClients[s];
 
-      
             //send disconnect message to chat room
             io.emit('disconnect', room, user, time);
           }
         }
       }
     }
+    delete allClients[s];
     
     
 
