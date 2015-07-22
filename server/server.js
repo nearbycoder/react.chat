@@ -130,9 +130,9 @@ io.on('connection', function(socket){
           if(index != -1){
             userList[list].splice(index, 1);
 
-            //send disconnect message to chat room
-            io.emit('disconnect', room, user, time);
           }
+          //send disconnect message to chat room
+          io.emit('disconnect', room, user, time);
         }
       }
     }
