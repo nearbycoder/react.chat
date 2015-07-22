@@ -7,6 +7,18 @@ var io = require("socket.io-client");
 var socket = io('http://reactchat.tk:6060');
 var _room = helper.getRoom("room");
 var highlight = require("highlight.js");
+var missed = 0;
+var blur = false;
+window.addEventListener('blur', function() {
+		missed = 0;
+    blur = true;
+});
+window.addEventListener('focus', function() {
+		missed = 0;
+    blur = false;
+    document.title =  _room;
+});
+
 
 var ChatBox = React.createClass({
 	getInitialState: function() {
@@ -92,6 +104,10 @@ var ChatBox = React.createClass({
     	highlight.highlightBlock($( "code:last" ).get(0));
     	this.code = false;
   	}
+  	if(blur){
+	  	missed++
+	  	document.title = '[' + missed + '] - '+ _room;
+	  }
 
 
 	},
