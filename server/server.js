@@ -36,13 +36,14 @@ io.on('connection', function(socket){
       if(oldNick){
         var index = userList[room].indexOf(oldNick);
         userList[room].splice(index, 1);
+        userList[room].push(user);
       }
 			if(!_.contains(userList[room], user)){
 				userList[room].push(user);
 			}
 			
 			//send list of users in current room to current client
-  		io.sockets.connected[allClients[i].id].emit('getUserList', userList[room].join(", "), time);
+  		io.sockets.connected[allClients[i].id].emit('getUserList', userList[room].join(","), time);
 
 		} else if (userExists == true) {
 			//send prompt to current user/socket connected
@@ -58,7 +59,7 @@ io.on('connection', function(socket){
     
     switch(cmd){
       //prompt user to reset their nickname
-      case "/nick":
+      case "/nick":  
         io.sockets.connected[allClients[i].id].emit('user.prompt');
       break;
       //list all commands in room
@@ -99,9 +100,9 @@ io.on('connection', function(socket){
   //send disconnect notice to chat room for current socket username
   socket.on('disconnect', function() {
     var time = moment().format('MMMM Do YYYY, h:mm:ss a');
-    var i = allClients.indexOf(socket);
-    var user = allClients[i].userName;
-    var room = allClients[i].room;
+    var s = allClients.indexOf(socket);
+    var user = allClients[s].userName;
+    var room = allClients[s].room;
     
     //check if room exists and has current disconnect name. If so remove from array
     if(typeof userList[room] != "undefined"){
@@ -109,7 +110,7 @@ io.on('connection', function(socket){
       userList[room].splice(index, 1);
     }
     
-    delete allClients[i];
+    delete allClients[s];
 
       
     //send disconnect message to chat room
