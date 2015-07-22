@@ -88,6 +88,9 @@ io.on('connection', function(socket){
           };
         };
       break;
+      case "/clear":
+        io.sockets.connected[allClients[i].id].emit('clear.chat', room);
+      break;
       default:
         io.emit('message', room, user, message, time, isCode);
     }

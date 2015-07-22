@@ -77,6 +77,12 @@ var ChatBox = React.createClass({
 		  	_this.setState({messages: _this.state.messages.concat({user : '*', message: user + " has left", time: time})});
 		  }
 		});
+
+		socket.on('clear.chat', function(room){
+			if(room == _room){
+		  	_this.setState({messages: []});
+		  }
+		});
 	},
 	componentDidUpdate: function(prevProps, prevState) {
 		if(this.scroll){

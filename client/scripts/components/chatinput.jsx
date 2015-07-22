@@ -1,5 +1,10 @@
 var React = require("react");
 var $ = require("jquery");
+localStorage["currentKey"] = 0;
+if(localStorage["lastMessages"]){
+	var locallength = JSON.parse(localStorage["lastMessages"]).last;
+	localStorage["currentKey"] = locallength.length;
+}
 $(function() {
 $('#userChat').on( 'change keyup keydown paste cut', 'textarea', function (){
     $(this).height(0).height(this.scrollHeight - 20);
@@ -16,8 +21,48 @@ var ChatInput = React.createClass({
 		if(event.keyCode == 13 && !event.shiftKey){
 			event.preventDefault();
 		}
+
+		if(event.shiftKey && event.keyCode == 40){
+			event.preventDefault();
+
+			localStorage["currentKey"]++;
+
+			var storedMessages = JSON.parse(localStorage["lastMessages"]).last;
+
+			$(React.findDOMNode(this.refs.message)).val(storedMessages[localStorage["currentKey"]]);	
+		}
+		if(event.shiftKey && event.keyCode == 38){
+			event.preventDefault();
+
+			localStorage["currentKey"]--;
+
+			var storedMessages = JSON.parse(localStorage["lastMessages"]).last;
+
+			$(React.findDOMNode(this.refs.message)).val(storedMessages[localStorage["currentKey"]]);
+		}
 		if(message.length != ""){
        if(event.keyCode == 13 && !event.shiftKey){
+       		if(localStorage["lastMessages"]){
+	       		var storedMessages = JSON.parse(localStorage["lastMessages"]).last;
+	       		length = storedMessages.length;
+	       		if(length <= 10){
+	       			storedMessages[length] = message;
+	       		}else{
+	       			storedMessages.shift();
+	       			storedMessages[10] = message;
+	       		}
+
+						localStorage["lastMessages"] = JSON.stringify({"last" : storedMessages});
+
+					} else {
+						localStorage["lastMessages"] = JSON.stringify({"last" : [message]});
+					}
+
+					if(localStorage["lastMessages"]){
+						var locallength = JSON.parse(localStorage["lastMessages"]).last;
+						localStorage["currentKey"] = locallength.length;
+					}
+
           this.props.onKeyDown(message);
           $(React.findDOMNode(this.refs.message)).val("").focus(); 
           event.preventDefault();
