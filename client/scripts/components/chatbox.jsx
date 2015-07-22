@@ -129,7 +129,6 @@ var ChatBox = React.createClass({
 		if(!nickName){
 			var nickName = prompt("Please enter nickname");
 			if (nickName != null && nickName != '') {
-				var oldNick = localStorage.getItem('nickName');
 		    localStorage.setItem('nickName', nickName.replace(/ /g,"-"));
 		    console.log(oldNick)
 		    socket.emit('join', _room, localStorage.getItem('nickName'), oldNick);
