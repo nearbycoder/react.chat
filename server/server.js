@@ -52,7 +52,9 @@ io.on('connection', function(socket){
           }
         }
       }
-			
+			if(!_.contains(userList[room], user)){
+				userList[room].push(user);
+			}
 			
 			//send list of users in current room to current client
   		io.sockets.connected[allClients[i].id].emit('getUserList', userList[room].join(","), time);
