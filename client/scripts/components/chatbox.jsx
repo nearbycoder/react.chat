@@ -61,7 +61,7 @@ var ChatBox = React.createClass({
 			}
 			localStorage.setItem('nickName', '');
 			var nickName = prompt("Nickname already exists please enter another one?");
-			if (nickName != null) {
+			if (nickName != null && nickName != '') {
 			    localStorage.setItem('nickName', nickName.replace(/ /g,"-"));
 			    socket.emit('join', _room, localStorage.getItem('nickName'), oldNick);
 			}
@@ -127,9 +127,9 @@ var ChatBox = React.createClass({
 		var nickName = localStorage.getItem('nickName');
 		if(!nickName){
 			var nickName = prompt("Please enter nickname");
-			if (nickName != null) {
+			if (nickName != null && nickName != '') {
 			    localStorage.setItem('nickName', nickName.replace(/ /g,"-"));
-			    socket.emit('join', _room, localStorage.getItem('nickName'), oldNick);
+			    socket.emit('join', _room, localStorage.getItem('nickName'));
 			}
 		}else{
 			if(message.split(" ")[0] == '!'){
