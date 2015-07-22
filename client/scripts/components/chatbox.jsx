@@ -9,6 +9,7 @@ var _room = helper.getRoom("room");
 var highlight = require("highlight.js");
 var missed = 0;
 var blur = false;
+var oldNick;
 window.addEventListener('blur', function() {
 		missed = 0;
     blur = true;
@@ -57,7 +58,7 @@ var ChatBox = React.createClass({
 		//prompt user if username already is in room io.emit('user.prompt');
 		socket.on('user.prompt', function(){
 			if(localStorage.getItem('nickName')){
-				var oldNick = localStorage.getItem('nickName');
+				oldNick = localStorage.getItem('nickName');
 			}
 			localStorage.setItem('nickName', '');
 			var nickName = prompt("Nickname already exists please enter another one?");
@@ -129,7 +130,7 @@ var ChatBox = React.createClass({
 			var nickName = prompt("Please enter nickname");
 			if (nickName != null && nickName != '') {
 			    localStorage.setItem('nickName', nickName.replace(/ /g,"-"));
-			    socket.emit('join', _room, localStorage.getItem('nickName'));
+			    socket.emit('join', _room, localStorage.getItem('nickName'), oldNick);
 			}
 		}else{
 			if(message.split(" ")[0] == '!'){
