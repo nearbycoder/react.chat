@@ -20,7 +20,7 @@ io.on('connection', function(socket){
 
   	//iterate over allClients to check userName for duplicates
   	allClients.forEach(function(client){
-  		if(client.userName == user || user == 'undefined'){
+  		if(client.userName == user && client.conn.remoteAddress != allClients[i].conn.remoteAddress || user == 'undefined'){
   			userExists = true;
   		}
   	})
