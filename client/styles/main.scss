@@ -106,7 +106,7 @@ pre{
 		&:focus {
 			background-color: $primary-bgcolor;
 		}
-		@media (max-width: 400px) {
+		@media (max-width: 800px) {
 			width: 100%;
  	  }
 	}
