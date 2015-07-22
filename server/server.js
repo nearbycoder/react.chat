@@ -20,7 +20,7 @@ io.on('connection', function(socket){
 
   	//iterate over allClients to check userName for duplicates
   	allClients.forEach(function(client){
-  		if(client.userName == user && client.room == room){
+  		if(client.userName == user){
   			userExists = true;
   		}
   	})
