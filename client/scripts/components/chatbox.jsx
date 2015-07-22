@@ -61,7 +61,7 @@ var ChatBox = React.createClass({
 		  	_this.setState({messages: _this.state.messages.concat({user : '*', message: nickName + " has joined", time: time})});
 		  }
 		  //if user changed name
-		  if(oldNick){
+		  if(room == _room && oldNick){
 		  	_this.setState({messages: _this.state.messages.concat({user : '*', message: oldNick + " is now " + nickName, time: time})});
 		  }
 		});
