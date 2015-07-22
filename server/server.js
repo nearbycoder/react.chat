@@ -20,7 +20,7 @@ io.on('connection', function(socket){
 
   	//iterate over allClients to check userName for duplicates
   	allClients.forEach(function(client){
-  		if(client.userName == user && client.conn.remoteAddress != allClients[i].conn.remoteAddress || user == 'undefined'){
+  		if(client.userName == user || user == 'undefined'){
   			userExists = true;
   		}
   	})
@@ -33,11 +33,13 @@ io.on('connection', function(socket){
 			if(typeof userList[room] == 'undefined'){
 				userList[room] = [];
 			}
-      for(list in userList){
-        var index = userList[list].indexOf(oldNick);
-        if(index != -1){
-          userList[list].splice(index, 1);
-          userList[list].push(user);
+      if(oldNick){
+        for(list in userList){
+          var index = userList[list].indexOf(oldNick);
+          if(index != -1){
+            userList[list].splice(index, 1);
+            userList[list].push(user);
+          }
         }
       }
 			if(!_.contains(userList[room], user)){

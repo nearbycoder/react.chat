@@ -59,6 +59,7 @@ var ChatBox = React.createClass({
 			if(localStorage.getItem('nickName')){
 				var oldNick = localStorage.getItem('nickName');
 			}
+			localStorage.setItem('nickName', '');
 			var nickName = prompt("Nickname already exists please enter another one?");
 			if (nickName != null && nickName != '') {
 			    localStorage.setItem('nickName', nickName.replace(/ /g,"-"));
