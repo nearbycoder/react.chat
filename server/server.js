@@ -35,13 +35,11 @@ io.on('connection', function(socket){
 			if(typeof userList[room] == 'undefined'){
 				userList[room] = [];
 			}
-      if(oldNick){
-        for(list in userList){
-          var index = userList[list].indexOf(oldNick);
-          if(index != -1){
-            userList[list].splice(index, 1);
-            userList[list].push(user);
-          }
+      for(list in userList){
+        var index = userList[list].indexOf(oldNick);
+        if(index != -1){
+          userList[list].splice(index, 1);
+          userList[list].push(user);
         }
       }
 			if(!_.contains(userList[room], user)){
