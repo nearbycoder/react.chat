@@ -22,12 +22,13 @@ io.on('connection', function(socket){
   	allClients.forEach(function(client){
   		if(client.userName == user || user == 'undefined'){
   			userExists = true;
-        for(list in userList){
-          var index = userList[list].indexOf(oldNick);
-          console.log(index)
-          if(index != -1){
-            userList[list].splice(index, 1);
-            userList[list].push(user);
+        if(oldNick){
+          for(list in userList){
+            var index = userList[list].indexOf(oldNick);
+            if(index != -1){
+              userList[list].splice(index, 1);
+              userList[list].push(user);
+            }
           }
         }
   		}
@@ -41,6 +42,7 @@ io.on('connection', function(socket){
 			if(typeof userList[room] == 'undefined'){
 				userList[room] = [];
 			}
+      if(oldNick){
         for(list in userList){
           var index = userList[list].indexOf(oldNick);
           console.log(index)
@@ -49,9 +51,8 @@ io.on('connection', function(socket){
             userList[list].push(user);
           }
         }
-			if(!_.contains(userList[room], user)){
-				userList[room].push(user);
-			}
+      }
+			
 			
 			//send list of users in current room to current client
   		io.sockets.connected[allClients[i].id].emit('getUserList', userList[room].join(","), time);
