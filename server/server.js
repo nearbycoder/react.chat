@@ -22,6 +22,14 @@ io.on('connection', function(socket){
   	allClients.forEach(function(client){
   		if(client.userName == user || user == 'undefined'){
   			userExists = true;
+        for(list in userList){
+          var index = userList[list].indexOf(oldNick);
+          console.log(index)
+          if(index != -1){
+            userList[list].splice(index, 1);
+            userList[list].push(user);
+          }
+        }
   		}
   	})
   	if(userExists == false && user != null){
@@ -33,15 +41,14 @@ io.on('connection', function(socket){
 			if(typeof userList[room] == 'undefined'){
 				userList[room] = [];
 			}
-      if(oldNick){
         for(list in userList){
           var index = userList[list].indexOf(oldNick);
+          console.log(index)
           if(index != -1){
             userList[list].splice(index, 1);
             userList[list].push(user);
           }
         }
-      }
 			if(!_.contains(userList[room], user)){
 				userList[room].push(user);
 			}
