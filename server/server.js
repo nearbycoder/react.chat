@@ -3,7 +3,6 @@ var _ = require('underscore');
 var moment = require("moment");
 var config = require("./config");
 var allClients = [];
-var userList = [];
 io.on('connection', function(socket){
 
 	//push new socket info to allClients
@@ -16,46 +15,29 @@ io.on('connection', function(socket){
 	socket.on('join', function(room, user, oldNick){
     var time = moment().format('MMMM Do YYYY, h:mm:ss a');
   	var userExists = false;
-  	var userLog = false;
-    var x = 0;
+    var users = [];
 
   	//iterate over allClients to check userName for duplicates
   	allClients.forEach(function(client){
-  		if(client.userName == user && client.conn.remoteAddress != allClients[i].conn.remoteAddress || user == 'undefined'){
+  		if(client.userName == user || user == 'undefined'){
   			userExists = true;
   		}
   	})
   	if(userExists == false && user != null){
   		//send current user to room once no conflicts with users
-      allClients.forEach(function(client){
-        if(user == client.userName && room == client.room){
-          x++;
-        }
-      })
-      if(x <= 0){
 			socket.broadcast.emit('user.join', room, user, time, oldNick);
-      }
+      
 			allClients[i].userName = user;
 			allClients[i].room = room;
 
-			if(typeof userList[room] == 'undefined'){
-				userList[room] = [];
-			}
-      if(oldNick){
-        for(list in userList){
-          var index = userList[list].indexOf(oldNick);
-          if(index != -1){
-            userList[list].splice(index, 1);
-            userList[list].push(user);
-          }
+      allClients.forEach(function(client){
+        if(room == client.room){
+          users.push(client.userName)
         }
-      }
-			if(!_.contains(userList[room], user)){
-				userList[room].push(user);
-			}
+      })
 			
 			//send list of users in current room to current client
-  		io.sockets.connected[allClients[i].id].emit('getUserList', userList[room].join(","), time);
+  		io.sockets.connected[allClients[i].id].emit('getUserList', users.join(","), time);
 
 		} else if (userExists == true) {
 			//send prompt to current user/socket connected
@@ -68,6 +50,7 @@ io.on('connection', function(socket){
     var time = moment().format('MMMM Do YYYY, h:mm:ss a');
     var cmd = parseArgs(message)[0];
     var usr = parseArgs(message)[1];
+    var users = [];
     
     switch(cmd){
       //prompt user to reset their nickname
@@ -80,7 +63,13 @@ io.on('connection', function(socket){
       break;
       //list all users in current room
       case "/list":
-        io.sockets.connected[allClients[i].id].emit('message', room, '*', 'Current users in room are ' + userList[room], time);
+        allClients.forEach(function(client){
+          if(client.room == room){
+            users.push(client.userName)
+          }
+        })
+
+        io.sockets.connected[allClients[i].id].emit('message', room, '*', 'Current users in room are ' + users.join(","), time);
       break;
       //ability to private message user with /pm <@username> <message>
       case "/pm":
@@ -113,33 +102,11 @@ io.on('connection', function(socket){
   socket.on('disconnect', function() {
     var time = moment().format('MMMM Do YYYY, h:mm:ss a');
     var s = allClients.indexOf(socket);
-    var x = 0;
     var user = allClients[s].userName;
-    var room = allClients[s].room;
-    
+    var room = allClients[s].room; 
     //check if room exists and has current disconnect name. If so remove from array
-    if(typeof userList[room] != "undefined"){
-      for(list in userList){
-        var index = userList[list].indexOf(user);
-        allClients.forEach(function(client){
-          if(user == client.userName && room == client.room){
-            x++;
-          }
-        })
-        if(x <= 1){
-          if(index != -1){
-            userList[list].splice(index, 1);
-
-          }
-          //send disconnect message to chat room
-          io.emit('disconnect', room, user, time);
-        }
-      }
-    }
+    io.emit('disconnect', room, user, time);
     delete allClients[s];
-    
-    
-
   });
 
 });
