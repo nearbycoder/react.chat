@@ -1,3 +1,4 @@
 server/node_modules
 client/node_modules
 client/npm-debug.log
+client/scripts/config/config.jsx
