@@ -1,5 +1,3 @@
-var io = require("socket.io-client");
-var socket = io('http://reactchat.tk:6060');
 var foundation = require("../node_modules/foundation/scss/foundation.scss");
 var styles = require("../styles/main.scss");
 var React = require("react");
@@ -19,7 +17,6 @@ var ChatBox = require("./components/chatbox.jsx");
 
 var App = React.createClass({
 	componentWillMount: function() {
-		socket.on('connect', function(){});
 	},
 	getInitialState: function(){
 		return null;
