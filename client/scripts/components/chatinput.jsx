@@ -42,6 +42,10 @@ var ChatInput = React.createClass({
 		}
 		if(message.length != ""){
        if(event.keyCode == 13 && !event.shiftKey){
+       	if(message.split(" ")[0] == '/color'){
+					localStorage.setItem('userColor', message.split(" ")[1]);
+					console.log(message)
+				}
        		if(localStorage["lastMessages"]){
 	       		var storedMessages = JSON.parse(localStorage["lastMessages"]).last;
 	       		length = storedMessages.length;
