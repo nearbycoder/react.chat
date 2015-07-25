@@ -30,14 +30,20 @@ var ChatBox = React.createClass({
 	},
 	componentWillMount: function() {
 		var _this = this;
-		if(_room && !localStorage.getItem('nickName')){
+		if(!localStorage.getItem('nickName')){
+			localStorage.setItem('nickName', JSON.stringify({}));
+		}
+		if(_room && !JSON.parse(localStorage.getItem('nickName'))[_room]){
 			var nickName = prompt("Please enter nickname");
 			if (nickName != null && nickName != "") {
-			    localStorage.setItem('nickName', nickName.replace(/ /g,"-"));
+					var nick = nickName.replace(/ /g,"-");
+					var json = JSON.parse(localStorage.getItem('nickName'));
+					json[_room] = nick;
+			    localStorage['nickName'] = JSON.stringify(json);
 			}
 		}
 		//show user joined status after checking server for username duplicates
-		socket.emit('join', _room, localStorage.getItem('nickName'));
+		socket.emit('join', _room, JSON.parse(localStorage.getItem('nickName'))[_room]);
 
 		//message room io.emit('message', room, nickname, message,  time);
 		socket.on('message', function(room, user, message, time, isCode){
@@ -59,13 +65,18 @@ var ChatBox = React.createClass({
 		//prompt user if username already is in room io.emit('user.prompt');
 		socket.on('user.prompt', function(){
 			if(localStorage.getItem('nickName') != null && localStorage.getItem('nickName') != ''){
-				oldNick = localStorage.getItem('nickName');
+				oldNick = JSON.parse(localStorage.getItem('nickName'))[_room];
 			}
-			localStorage.setItem('nickName', '');
 			var nickName = prompt("Nickname already exists please enter another one?");
+			var json = JSON.parse(localStorage.getItem('nickName'));
+			json[_room] = "";
+			localStorage['nickName'] = JSON.stringify(json);
 			if (nickName != null && nickName != '') {
-			    localStorage.setItem('nickName', nickName.replace(/ /g,"-"));
-			    socket.emit('join', _room, localStorage.getItem('nickName'), oldNick);
+			    var nick = nickName.replace(/ /g,"-");
+					json = JSON.parse(localStorage.getItem('nickName'));
+					json[_room] = nick;
+			    localStorage['nickName'] = JSON.stringify(json);
+			    socket.emit('join', _room, JSON.parse(localStorage.getItem('nickName'))[_room], oldNick);
 			}
 		});
 
@@ -126,19 +137,21 @@ var ChatBox = React.createClass({
 	},
 	addMessage: function(message){
 		$('html, body').scrollTop( $(document).height() );
-		var nickName = localStorage.getItem('nickName');
+		var nickName = JSON.parse(localStorage.getItem('nickName'))[_room];
 		if(!nickName){
 			var nickName = prompt("Please enter nickname");
 			if (nickName != null && nickName != '') {
-		    localStorage.setItem('nickName', nickName.replace(/ /g,"-"));
-		    console.log(oldNick)
-		    socket.emit('join', _room, localStorage.getItem('nickName'), oldNick);
+	    	var nick = nickName.replace(/ /g,"-");
+				var json = JSON.parse(localStorage.getItem('nickName'));
+				json[_room] = nick;
+		    localStorage['nickName'] = JSON.stringify(json);
+		    socket.emit('join', _room, JSON.parse(localStorage.getItem('nickName'))[_room], oldNick);
 			}
 		}else{
 			if(message.split(" ")[0] == '!'){
 				this.code = true;
 			}
-		  socket.emit('message', _room, nickName, message, this.code);
+		  socket.emit('message', _room, JSON.parse(localStorage.getItem('nickName'))[_room], message, this.code);
     }
   },
 	render: function(){
