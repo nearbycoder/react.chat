@@ -11,6 +11,14 @@ var highlight = require("highlight.js");
 var missed = 0;
 var oldNick;
 var blur = false;
+
+function urlify(text) {
+    var urlRegex = /(https?:\/\/[^\s]+)/g;
+    return text.replace(urlRegex, function(url) {
+        return '<a target="_blank" href="' + url + '">' + url + '</a>';
+    })
+}
+
 window.addEventListener('blur', function() {
 		missed = 0;
     blur = true;
@@ -111,6 +119,10 @@ var ChatBox = React.createClass({
 		});
 	},
 	componentDidUpdate: function(prevProps, prevState) {
+		var $elem = $( "code:last").html();
+		$elem = urlify($elem);
+		$( "code:last").html($elem);
+
 		if(this.scroll){
     	$('html, body').scrollTop( $(document).height() );
     }
@@ -122,8 +134,6 @@ var ChatBox = React.createClass({
 	  	missed++
 	  	document.title = '[' + missed + '] - '+ _room;
 	  }
-
-
 	},
 	eachChat: function(message, i) {
 		return (
