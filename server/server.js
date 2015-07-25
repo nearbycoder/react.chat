@@ -12,7 +12,7 @@ io.on('connection', function(socket){
 	var i = allClients.indexOf(socket);
 
 	//join room if user does not exists else prompt user for new username
-	socket.on('join', function(room, user, oldNick){
+	socket.on('join', function(room, user){
     var time = moment().format('MMMM Do YYYY, h:mm:ss a');
   	var userExists = false;
     var users = [];
@@ -25,7 +25,7 @@ io.on('connection', function(socket){
   	})
   	if(userExists == false && user != null){
   		//send current user to room once no conflicts with users
-			socket.broadcast.emit('user.join', room, user, time, oldNick);
+			socket.broadcast.emit('user.join', room, user, time);
       
 			allClients[i].userName = user;
 			allClients[i].room = room;
@@ -94,7 +94,7 @@ io.on('connection', function(socket){
         io.sockets.connected[allClients[i].id].emit('clear.chat', room);
       break;
       default:
-        io.emit('message', room, user, message, time, isCode);
+        io.emit('message', room, allClients[i].userName, message, time, isCode);
     }
   });
 

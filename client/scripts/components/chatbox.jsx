@@ -9,7 +9,6 @@ var socket = io(config.socketUrl);
 var _room = helper.getRoom("room");
 var highlight = require("highlight.js");
 var missed = 0;
-var oldNick;
 var blur = false;
 window.addEventListener('blur', function() {
 		missed = 0;
@@ -58,26 +57,19 @@ var ChatBox = React.createClass({
 
 		//prompt user if username already is in room io.emit('user.prompt');
 		socket.on('user.prompt', function(){
-			if(localStorage.getItem('nickName') != null && localStorage.getItem('nickName') != ''){
-				oldNick = localStorage.getItem('nickName');
-			}
 			localStorage.setItem('nickName', '');
 			var nickName = prompt("Nickname already exists please enter another one?");
 			if (nickName != null && nickName != '') {
 			    localStorage.setItem('nickName', nickName.replace(/ /g,"-"));
-			    socket.emit('join', _room, localStorage.getItem('nickName'), oldNick);
+			    socket.emit('join', _room, localStorage.getItem('nickName'));
 			}
 		});
 
 		//join room io.emit('user.join', room, nickname, time);
-		socket.on('user.join', function(room, nickName, time, oldNick){
+		socket.on('user.join', function(room, nickName, time){
 			//if new user to room
-			if(room == _room && oldNick == null){
+			if(room == _room){
 		  	_this.setState({messages: _this.state.messages.concat({user : '*', message: nickName + " has joined", time: time})});
-		  }
-		  //if user changed name
-		  if(room == _room && oldNick){
-		  	_this.setState({messages: _this.state.messages.concat({user : '*', message: oldNick + " is now " + nickName, time: time})});
 		  }
 		});
 
@@ -131,8 +123,7 @@ var ChatBox = React.createClass({
 			var nickName = prompt("Please enter nickname");
 			if (nickName != null && nickName != '') {
 		    localStorage.setItem('nickName', nickName.replace(/ /g,"-"));
-		    console.log(oldNick)
-		    socket.emit('join', _room, localStorage.getItem('nickName'), oldNick);
+		    socket.emit('join', _room, localStorage.getItem('nickName'));
 			}
 		}else{
 			if(message.split(" ")[0] == '!'){
