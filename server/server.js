@@ -74,10 +74,16 @@ io.on('connection', function(socket){
       break;
       //ability to private message user with /pm <@username> <message>
       case "/pm":
+        allClients.forEach(function(client){
+          if(room == client.room){
+            users.push(client.userName)
+          }
+        })
         if(typeof usr != "undefined"){
           if(_.includes(usr, "@")){
             usr = usr.replace("@", "");
-            var index = userList[room].indexOf(usr);
+
+            var index = user.indexOf(usr);
             var foundUser = false;
             allClients.forEach(function(client){
               if(usr == client.userName){
