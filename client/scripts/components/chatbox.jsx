@@ -142,6 +142,7 @@ var ChatBox = React.createClass({
 
 		if(this.color && !this.code){
 			$( "code:last").html('<span style="color:' + this.color +'">'+ $elem +'</span>');
+			this.color = false;
 		}
 
 		if(this.scroll){
