@@ -12,6 +12,7 @@ var missed = 0;
 var blur = false;
 var gif = false;
 var userNotice = false;
+var code = false;
 
 
 //parse url from messages
@@ -139,7 +140,7 @@ var ChatBox = React.createClass({
 		//parse last message for links
 		var $elem = $( "code:last").html();
 		if($elem){
-			if($elem.includes("color can be set to")){
+			if($elem.indexOf("color can be set to") > -1){
 				var colorMessage = [];
 				var colors = ["aliceblue","antiquewhite","aqua","aquamarine","azure","beige","bisque","black","blanchedalmond","blue","blueviolet","brown","burlywood","cadetblue","chartreuse","chocolate","coral","cornflowerblue","cornsilk","crimson","cyan","darkblue","darkcyan","darkgoldenrod","darkgray","darkgrey","darkgreen","darkkhaki","darkmagenta","darkolivegreen","darkorange","darkorchid","darkred","darksalmon","darkseagreen","darkslateblue","darkslategray","darkslategrey","darkturquoise","darkviolet","deeppink","deepskyblue","dimgray","dimgrey","dodgerblue","firebrick","floralwhite","forestgreen","fuchsia","gainsboro","ghostwhite","gold","goldenrod","gray","grey","green","greenyellow","honeydew","hotpink","indianred","indigo","ivory","khaki","lavender","lavenderblush","lawngreen","lemonchiffon","lightblue","lightcoral","lightcyan","lightgoldenrodyellow","lightgray","lightgrey","lightgreen","lightpink","lightsalmon","lightseagreen","lightskyblue","lightslategray","lightslategrey","lightsteelblue","lightyellow","lime","limegreen","linen","magenta","maroon","mediumaquamarine","mediumblue","mediumorchid","mediumpurple","mediumseagreen","mediumslateblue","mediumspringgreen","mediumturquoise","mediumvioletred","midnightblue","mintcream","mistyrose","moccasin","navajowhite","navy","oldlace","olive","olivedrab","orange","orangered","orchid","palegoldenrod","palegreen","paleturquoise","palevioletred","papayawhip","peachpuff","peru","pink","plum","powderblue","purple","red","rosybrown","royalblue","saddlebrown","salmon","sandybrown","seagreen","seashell","sienna","silver","skyblue","slateblue","slategray","slategrey","snow","springgreen","steelblue","tan","teal","thistle","tomato","turquoise","violet","wheat","white","whitesmoke","yellow","yellowgreen"];
 				colors.forEach(function(color){
@@ -147,7 +148,6 @@ var ChatBox = React.createClass({
 				})
 				$elem = $elem + colorMessage.join(", ");
 			}
-			console.log($elem)
 			if(!this.gif){
   		$elem = urlify($elem);
   		$( "code:last").html($elem);
@@ -212,7 +212,7 @@ var ChatBox = React.createClass({
 				this.setState({messages: this.state.messages.concat({user : '*', message: "user notice is " + !this.userNotice})});
 			}else{
 				//send message to room
-		  	socket.emit('message', _room, JSON.parse(localStorage.getItem('nickName'))[_room], message, this.code);
+		  	console.log(socket.emit('message', _room, JSON.parse(localStorage.getItem('nickName'))[_room], message, this.code));
 			}
 			
     }
