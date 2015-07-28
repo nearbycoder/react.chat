@@ -11,11 +11,14 @@ var Chat = React.createClass({
 		return(
 			<div>
 				<div className="small-12 large-12 columns userChat">
-					<a title={this.props.time} className="userName small-2 large-2 columns" onClick={this.tagUser}>
+					<a title={this.props.time} className="userName small-1 large-2 columns largeName" onClick={this.tagUser}>
 					{this.props.userName}
 					</a>
-					<pre className="large-9 small-9 columns userMessage">
-						 <code>{this.props.children}</code>
+					<pre className="large-9 medium-9 small-12 columns userMessage">
+						<a title={this.props.time} className="smallName" onClick={this.tagUser}>
+							{this.props.userName} 
+						</a>
+						<code>{this.props.children}</code>
 					</pre>
 				</div>
 			</div>

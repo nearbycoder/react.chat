@@ -8,7 +8,9 @@ $user-color: #6897BB;
 
 
 $user-font-size: 12px;
-
+.smallName {
+		display:none;
+	}
 body {
 	background-color: $primary-bgcolor;
 	color: $font-color;
@@ -88,6 +90,11 @@ p {
 pre{
     white-space: pre-wrap;
 }
+.mainContainer {
+	@media (max-width: 600px) {
+		padding:0px;
+	}
+}
 
 .chatInput {
 	position: fixed;
@@ -96,6 +103,7 @@ pre{
 	width: 100%;
 	textarea {
 		resize: none;
+		font-size: 12px;
 		margin: 0;
 		border-left: 0px;
 		border-right: 0px;
@@ -111,4 +119,13 @@ pre{
  	  }
 	}
 
+}
+@media (max-width: 600px) {
+	.smallName {
+		display:inline-block;
+		margin-right: 5px;
+	}
+	.largeName {
+		display:none;
+	}
 }

@@ -145,6 +145,7 @@ var ChatBox = React.createClass({
 				})
 				$elem = $elem + colorMessage.join(", ");
 			}
+			console.log($elem)
 			if(!this.gif){
   		$elem = urlify($elem);
   		$( "code:last").html($elem);
@@ -152,6 +153,7 @@ var ChatBox = React.createClass({
 			if(this.gif){
 	  		$( "code:last").html("<img src="+$elem+"></img>");
 	  		this.gif = false;
+	  		$('html, body').scrollTop( $(document).height() );
 	  	}
 			if(this.color && !this.code){
 				$( "code:last").html('<span style="color:' + this.color +'">'+ $elem +'</span>');
