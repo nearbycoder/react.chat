@@ -11,6 +11,7 @@ var highlight = require("highlight.js");
 var missed = 0;
 var blur = false;
 var gif = false;
+var userNotice = false;
 
 
 //parse url from messages
@@ -109,7 +110,7 @@ var ChatBox = React.createClass({
 		//join room io.emit('user.join', room, nickname, time);
 		socket.on('user.join', function(room, nickName, time){
 			//if new user to room
-			if(room == _room){
+			if(room == _room && !_this.userNotice){
 		  	_this.setState({messages: _this.state.messages.concat({user : '*', message: nickName + " has joined", time: time})});
 		  }
 		});
@@ -121,7 +122,7 @@ var ChatBox = React.createClass({
 
 		//disconnect user and send disconnect notice to state socket.on('disconnect', function(room,user));
 		socket.on('disconnect', function(room, user, time){
-			if(room == _room){
+			if(room == _room && !_this.userNotice){
 		  	_this.setState({messages: _this.state.messages.concat({user : '*', message: user + " has left", time: time})});
 		  }
 		});
@@ -202,8 +203,14 @@ var ChatBox = React.createClass({
 			if(message.split(" ")[0] == '!'){
 				this.code = true;
 			}
-			//send message to room
-		  socket.emit('message', _room, JSON.parse(localStorage.getItem('nickName'))[_room], message, this.code);
+			if(message.split(" ")[0] == '/hideusernotice'){
+				this.userNotice = !this.userNotice;
+				this.setState({messages: this.state.messages.concat({user : '*', message: "user notice is " + !this.userNotice})});
+			}else{
+				//send message to room
+		  	socket.emit('message', _room, JSON.parse(localStorage.getItem('nickName'))[_room], message, this.code);
+			}
+			
     }
   },
 	render: function(){
