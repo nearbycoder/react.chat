@@ -62,8 +62,10 @@ var ChatBox = React.createClass({
 		socket.emit('join', _room, JSON.parse(localStorage.getItem('nickName'))[_room]);
 
 		socket.on('gif', function(room, user, img, time){
-			_this.gif = true;
-			_this.setState({messages: _this.state.messages.concat({user : user, message: img, time: time})});
+			if(room == _room){
+				_this.gif = true;
+				_this.setState({messages: _this.state.messages.concat({user : user, message: img, time: time})});
+			}
 		});
 
 		//message room io.emit('message', room, nickname, message,  time);
