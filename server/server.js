@@ -2,6 +2,7 @@ var io = require('socket.io')(6060);
 var _ = require('underscore');
 var moment = require("moment");
 var config = require("./config");
+var http = require('http');
 var allClients = [];
 io.on('connection', function(socket){
 
@@ -112,6 +113,36 @@ io.on('connection', function(socket){
           }
           
         }
+      break;
+      case "/giphy":
+        if(secondArg){
+          var gifUrlOptions = {
+            host: "api.giphy.com",
+            path: "/v1/gifs/search?q="+ secondArg +"&api_key=dc6zaTOxFJmzC",
+            method: "GET"
+          }
+
+          var gif = function(response){
+            var str = '';
+            response.on('data', function(chunk){
+              str += chunk;
+            });
+            response.on('end', function() {
+              str = JSON.parse(str).data[0]
+              if(str){
+                str = str.images.downsized_large.url;
+                io.emit('gif', room, allClients[i].userName, str, time);
+              } else {
+                io.sockets.connected[allClients[i].id].emit('message', room, '*', 'could not find gif', time);
+              }
+
+            });
+          }
+          http.request(gifUrlOptions, gif).end();
+
+        }
+
+
       break;
       default:
         io.emit('message', room, allClients[i].userName, message, time, isCode, allClients[i].color);
