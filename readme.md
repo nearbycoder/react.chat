@@ -4,8 +4,7 @@
 
 [Demo](http://reactchat.tk)
 
-##### React Chat goes further by adding commands that will enhance your user experience such as syntax highlighting, giphy support,
-unique colors based on user can be set, private messaging, and a history of the last ten messages that was sent.
+##### React Chat goes further by adding commands that will enhance your user experience such as syntax highlighting, giphy support, unique colors based on user can be set, private messaging, and a history of the last ten messages that was sent.
 
 ![ReactChat](img/react-chat.png?raw=true "React Chat")
 
