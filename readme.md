@@ -12,11 +12,11 @@ Commands:
 * /nick : reset your nickname
 * /list : list all users in room
 * /clear : clears the current chat content
-* /color <color> : set users message color. Can be any css color
+* /color [color] : set users message color. Can be any css color
 * /color help : list all colors avaliable
 * /hideusernotice : disables user join/left notices
-* /giphy <search term>: add random gif to chat
+* /giphy [search term]: add random gif to chat
 * shift + up : scroll up through last 10 messages sent
 * shift + down : scroll down through last 10 messages sent
-* /pm @<user> : private message a user in current room
+* /pm @[user] : private message a user in current room
 * ! : highlight syntax
