@@ -212,7 +212,7 @@ var ChatBox = React.createClass({
 				this.setState({messages: this.state.messages.concat({user : '*', message: "user notice is " + !this.userNotice})});
 			}else{
 				//send message to room
-		  	console.log(socket.emit('message', _room, JSON.parse(localStorage.getItem('nickName'))[_room], message, this.code));
+		  	socket.emit('message', _room, JSON.parse(localStorage.getItem('nickName'))[_room], message, this.code);
 			}
 			
     }
