@@ -152,14 +152,13 @@ var ChatBox = React.createClass({
 				})
 				$elem = $elem + colorMessage.join(", ");
 			}
-			if(!this.gif){
-  		$elem = urlify($elem);
-  		$( "code:last").html($elem);
-	  	}
 			if(this.gif){
 	  		$( "code:last").html("<img src="+$elem+"></img>");
 	  		this.gif = false;
 	  		$('html, body').scrollTop( $(document).height() );
+	  	} else if ($elem.indexOf("<img") == -1 && $elem.indexOf('<a target="_blank"') == -1) {
+	  		$elem = urlify($elem);
+  			$( "code:last").html($elem);
 	  	}
 			if(this.color && !this.code){
 				$( "code:last").html('<span style="color:' + this.color +'">'+ $elem +'</span>');
@@ -194,7 +193,7 @@ var ChatBox = React.createClass({
 		//no nickname ask for nickname
 		if(!nickName){
 			var nickName = prompt("Please enter nickname");
-			if (nickName != null && nickName != '') {
+			if (nickName != nulsl && nickName != '') {
 	    	var nick = nickName.replace(/ /g,"-");
 				var json = JSON.parse(localStorage.getItem('nickName'));
 				json[_room] = nick;
