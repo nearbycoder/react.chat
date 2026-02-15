@@ -55,6 +55,11 @@ function RootDocument() {
 				<HeadContent />
 				{/* biome-ignore lint/security/noDangerouslySetInnerHtml: Static inline script applies initial dark class from selected code theme. */}
 				<script dangerouslySetInnerHTML={{ __html: themeScript }} />
+				<script
+					defer
+					data-domain="chat.nrby.xyz"
+					src="https://tic.nrby.xyz/js/script.js"
+				/>
 			</head>
 			<body>
 				<Outlet />
