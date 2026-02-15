@@ -19,7 +19,7 @@ export function MessageItem({ message, currentNick }: MessageItemProps) {
 	switch (message.type) {
 		case "system":
 			return (
-				<div className="px-4 py-1 text-sm text-muted-foreground italic animate-in fade-in slide-in-from-bottom-1 duration-200">
+				<div className="animate-in px-3 py-1 text-sm text-muted-foreground italic duration-200 fade-in slide-in-from-bottom-1 sm:px-4">
 					<span className="opacity-60 mr-2">{time}</span>
 					{message.text}
 				</div>
@@ -27,24 +27,20 @@ export function MessageItem({ message, currentNick }: MessageItemProps) {
 
 		case "error":
 			return (
-				<div className="px-4 py-1 text-sm text-destructive-foreground animate-in fade-in slide-in-from-bottom-1 duration-200">
+				<div className="animate-in px-3 py-1 text-sm text-destructive-foreground duration-200 fade-in slide-in-from-bottom-1 sm:px-4">
 					<span className="opacity-60 mr-2">{time}</span>
 					{message.text}
 				</div>
 			);
 
 		case "chat": {
-			const isMe =
-				message.nick?.toLowerCase() === currentNick.toLowerCase();
+			const isMe = message.nick?.toLowerCase() === currentNick.toLowerCase();
 			return (
 				<div
-					className={`px-4 py-1 hover:bg-accent/30 transition-colors animate-in fade-in slide-in-from-bottom-1 duration-200 ${isMe ? "bg-accent/10" : ""}`}
+					className={`animate-in px-3 py-1 transition-colors duration-200 fade-in slide-in-from-bottom-1 hover:bg-accent/30 sm:px-4 ${isMe ? "bg-accent/10" : ""}`}
 				>
 					<span className="opacity-60 text-xs mr-2">{time}</span>
-					<span
-						className="font-semibold mr-2"
-						style={{ color: message.color }}
-					>
+					<span className="font-semibold mr-2" style={{ color: message.color }}>
 						{message.nick}
 					</span>
 					<span className="text-foreground break-words whitespace-pre-wrap">
@@ -58,32 +54,24 @@ export function MessageItem({ message, currentNick }: MessageItemProps) {
 			const isSender =
 				message.from?.toLowerCase() === currentNick.toLowerCase();
 			return (
-				<div className="px-4 py-1 bg-purple-500/10 border-l-2 border-purple-500 animate-in fade-in slide-in-from-bottom-1 duration-200">
+				<div className="animate-in border-l-2 border-purple-500 bg-purple-500/10 px-3 py-1 duration-200 fade-in slide-in-from-bottom-1 sm:px-4">
 					<span className="opacity-60 text-xs mr-2">{time}</span>
 					<span className="text-purple-400 font-semibold text-sm mr-1">
 						[PM]
 					</span>
-					<span
-						className="font-semibold mr-1"
-						style={{ color: message.color }}
-					>
+					<span className="font-semibold mr-1" style={{ color: message.color }}>
 						{isSender ? `to @${message.to}` : message.from}
 					</span>
-					<span className="text-foreground break-words">
-						{message.text}
-					</span>
+					<span className="text-foreground break-words">{message.text}</span>
 				</div>
 			);
 		}
 
 		case "giphy":
 			return (
-				<div className="px-4 py-2 animate-in fade-in slide-in-from-bottom-1 duration-200">
+				<div className="animate-in px-3 py-2 duration-200 fade-in slide-in-from-bottom-1 sm:px-4">
 					<span className="opacity-60 text-xs mr-2">{time}</span>
-					<span
-						className="font-semibold mr-2"
-						style={{ color: message.color }}
-					>
+					<span className="font-semibold mr-2" style={{ color: message.color }}>
 						{message.nick}
 					</span>
 					<span className="text-muted-foreground text-sm">
@@ -100,12 +88,9 @@ export function MessageItem({ message, currentNick }: MessageItemProps) {
 
 		case "code":
 			return (
-				<div className="px-4 py-1 animate-in fade-in slide-in-from-bottom-1 duration-200">
+				<div className="animate-in px-3 py-1 duration-200 fade-in slide-in-from-bottom-1 sm:px-4">
 					<span className="opacity-60 text-xs mr-2">{time}</span>
-					<span
-						className="font-semibold mr-2"
-						style={{ color: message.color }}
-					>
+					<span className="font-semibold mr-2" style={{ color: message.color }}>
 						{message.nick}
 					</span>
 					<CodeBlock text={message.text || ""} language={message.language} />

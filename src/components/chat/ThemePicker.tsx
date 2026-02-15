@@ -54,7 +54,10 @@ export function ThemePicker() {
 					<span className="sr-only">Theme</span>
 				</Button>
 			</DropdownMenuTrigger>
-			<DropdownMenuContent align="end" className="w-56 p-2">
+			<DropdownMenuContent
+				align="end"
+				className="w-[min(18rem,calc(100vw-1rem))] p-2"
+			>
 				<div className="max-h-80 space-y-1 overflow-y-auto">
 					{codeThemes.map((themeOption) => (
 						<button
