@@ -47,6 +47,17 @@ bun run build
 node .output/server/index.mjs
 ```
 
+## Deploy to Railway
+
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/template/new?repo=nearbycoder/react.chat&branch=main)
+
+Or manually:
+
+1. Connect your GitHub repo in the [Railway dashboard](https://railway.com)
+2. Railway auto-detects the `railway.json` config
+3. Set any environment variables (e.g. `GIPHY_API_KEY` if using `/giphy`)
+4. Deploy — the app binds to Railway's `PORT` automatically
+
 ## Commands
 
 | Command | Description |
