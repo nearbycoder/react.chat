@@ -1,65 +1,99 @@
-import { Palette, Sun, Moon, Monitor, Check } from "lucide-react";
+import { Check, Palette } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useTheme } from "../../hooks/useTheme";
+import { codeThemes } from "../../lib/themes";
 import { Button } from "../ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { Separator } from "../ui/separator";
-import { themes } from "../../lib/themes";
-import { useTheme } from "../../hooks/useTheme";
-import type { Mode } from "../../lib/themes";
-
-const modes: { value: Mode; icon: typeof Sun; label: string }[] = [
-  { value: "light", icon: Sun, label: "Light" },
-  { value: "dark", icon: Moon, label: "Dark" },
-  { value: "system", icon: Monitor, label: "System" },
-];
 
 export function ThemePicker() {
-  const { theme, mode, setTheme, setMode } = useTheme();
+	const { codeTheme, setCodeTheme } = useTheme();
+	const [open, setOpen] = useState(false);
+	const [swatchesLoaded, setSwatchesLoaded] = useState(false);
+	const [swatchesByTheme, setSwatchesByTheme] = useState<
+		Record<string, string[]>
+	>({});
 
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-8 w-8">
-          <Palette className="h-4 w-4" />
-          <span className="sr-only">Theme</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-auto p-3">
-        <div className="grid grid-cols-5 gap-2 place-items-center">
-          {themes.map((t) => (
-            <button
-              key={t.id}
-              type="button"
-              onClick={() => setTheme(t.id)}
-              className="relative h-6 w-6 rounded-full border border-border transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              style={{ backgroundColor: t.swatch }}
-              title={t.label}
-            >
-              {theme === t.id && (
-                <Check className="absolute inset-0 m-auto h-3 w-3 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]" />
-              )}
-            </button>
-          ))}
-        </div>
-        <Separator className="my-2" />
-        <div className="flex gap-1">
-          {modes.map((m) => (
-            <Button
-              key={m.value}
-              variant={mode === m.value ? "secondary" : "ghost"}
-              size="sm"
-              className="flex-1 gap-1.5"
-              onClick={() => setMode(m.value)}
-            >
-              <m.icon className="h-3.5 w-3.5" />
-              <span className="text-xs">{m.label}</span>
-            </Button>
-          ))}
-        </div>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
+	useEffect(() => {
+		if (!open || swatchesLoaded) return;
+
+		let cancelled = false;
+		import("../../lib/shiki-themes")
+			.then(async ({ getShikiThemeSwatches }) => {
+				const entries = await Promise.all(
+					codeThemes.map(async (themeOption) => [
+						themeOption.id,
+						await getShikiThemeSwatches(themeOption.id),
+					]),
+				);
+
+				if (!cancelled) {
+					setSwatchesByTheme(Object.fromEntries(entries));
+					setSwatchesLoaded(true);
+				}
+			})
+			.catch(() => {
+				if (!cancelled) {
+					setSwatchesLoaded(true);
+				}
+			});
+
+		return () => {
+			cancelled = true;
+		};
+	}, [open, swatchesLoaded]);
+
+	return (
+		<DropdownMenu open={open} onOpenChange={setOpen}>
+			<DropdownMenuTrigger asChild>
+				<Button variant="ghost" size="icon" className="h-8 w-8">
+					<Palette className="h-4 w-4" />
+					<span className="sr-only">Theme</span>
+				</Button>
+			</DropdownMenuTrigger>
+			<DropdownMenuContent align="end" className="w-56 p-2">
+				<div className="max-h-80 space-y-1 overflow-y-auto">
+					{codeThemes.map((themeOption) => (
+						<button
+							key={themeOption.id}
+							type="button"
+							onClick={() => setCodeTheme(themeOption.id)}
+							className={`flex w-full items-center justify-between gap-2 rounded-md px-2 py-1.5 text-left text-xs transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+								codeTheme === themeOption.id ? "bg-accent" : ""
+							}`}
+							title={themeOption.label}
+						>
+							<span className="inline-flex min-w-0 items-center gap-2">
+								{codeTheme === themeOption.id ? (
+									<Check className="h-3.5 w-3.5 text-primary" />
+								) : (
+									<span className="h-3.5 w-3.5 shrink-0" />
+								)}
+								<span className="truncate">{themeOption.label}</span>
+							</span>
+							<span className="inline-flex shrink-0 items-center gap-1">
+								{(
+									swatchesByTheme[themeOption.id] ?? [
+										"var(--muted)",
+										"var(--muted)",
+										"var(--muted)",
+										"var(--muted)",
+									]
+								).map((color, index) => (
+									<span
+										key={`${themeOption.id}-${index}`}
+										className="h-2.5 w-2.5 rounded-full border border-border/80"
+										style={{ backgroundColor: color }}
+									/>
+								))}
+							</span>
+						</button>
+					))}
+				</div>
+			</DropdownMenuContent>
+		</DropdownMenu>
+	);
 }

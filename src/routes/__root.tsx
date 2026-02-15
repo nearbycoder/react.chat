@@ -1,9 +1,14 @@
 import {
+	createRootRoute,
 	HeadContent,
 	Outlet,
 	Scripts,
-	createRootRoute,
 } from "@tanstack/react-router";
+import {
+	CODE_THEME_KEY,
+	codeThemes,
+	getDefaultCodeThemeId,
+} from "../lib/themes";
 
 import appCss from "../styles.css?url";
 
@@ -36,13 +41,19 @@ export const Route = createRootRoute({
 	component: RootDocument,
 });
 
-const themeScript = `(function(){try{var t=localStorage.getItem("react-chat-theme");var m=localStorage.getItem("react-chat-mode");if(t&&t!=="zinc")document.documentElement.dataset.theme=t;if(m==="light")document.documentElement.classList.remove("dark");else if(m==="dark")document.documentElement.classList.add("dark");else{if(window.matchMedia("(prefers-color-scheme:dark)").matches)document.documentElement.classList.add("dark");else document.documentElement.classList.remove("dark")}}catch(e){}})()`;
+const themeModeById = Object.fromEntries(
+	codeThemes.map((theme) => [theme.id, theme.type]),
+);
+const defaultThemeId = getDefaultCodeThemeId();
+
+const themeScript = `(function(){try{var key=${JSON.stringify(CODE_THEME_KEY)};var modeById=${JSON.stringify(themeModeById)};var fallback=${JSON.stringify(defaultThemeId)};var stored=localStorage.getItem(key);var mode=modeById[stored||""]||modeById[fallback]||"dark";document.documentElement.classList.toggle("dark",mode==="dark")}catch(e){}})()`;
 
 function RootDocument() {
 	return (
 		<html lang="en">
 			<head>
 				<HeadContent />
+				{/* biome-ignore lint/security/noDangerouslySetInnerHtml: Static inline script applies initial dark class from selected code theme. */}
 				<script dangerouslySetInnerHTML={{ __html: themeScript }} />
 			</head>
 			<body>

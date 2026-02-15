@@ -1,16 +1,17 @@
+import { useChatDispatch, useChatState } from "../../hooks/useChatStore";
 import {
 	Dialog,
 	DialogContent,
+	DialogDescription,
 	DialogHeader,
 	DialogTitle,
-	DialogDescription,
 } from "../ui/dialog";
 import { Separator } from "../ui/separator";
-import { useChatState, useChatDispatch } from "../../hooks/useChatStore";
 
 const commands = [
 	{ cmd: "/nick <name>", desc: "Change your nickname" },
 	{ cmd: "/color <color>", desc: "Change your message color (any CSS color)" },
+	{ cmd: "/theme <theme-id>", desc: "Change the app/code theme" },
 	{ cmd: "/pm @user message", desc: "Send a private message" },
 	{ cmd: "/giphy <query>", desc: "Send a GIF from Giphy" },
 	{ cmd: "!code <text>", desc: "Send a syntax-highlighted code block" },

@@ -1,73 +1,110 @@
-import { useState, useEffect, useCallback } from "react";
-import { THEME_KEY, MODE_KEY } from "../lib/themes";
-import type { ThemeId, Mode } from "../lib/themes";
+import { useCallback, useEffect, useState } from "react";
+import type { CodeThemeId } from "../lib/themes";
+import {
+	CODE_THEME_KEY,
+	getDefaultCodeThemeId,
+	isCodeThemeId,
+	isDarkCodeTheme,
+} from "../lib/themes";
 
-function getStoredTheme(): ThemeId {
-  if (typeof window === "undefined") return "zinc";
-  return (localStorage.getItem(THEME_KEY) as ThemeId) || "zinc";
+interface ThemeState {
+	codeTheme: CodeThemeId;
 }
 
-function getStoredMode(): Mode {
-  if (typeof window === "undefined") return "system";
-  return (localStorage.getItem(MODE_KEY) as Mode) || "system";
+const THEME_CHANGE_EVENT = "react-chat-theme-change";
+
+function getStoredCodeTheme(): CodeThemeId {
+	if (typeof window === "undefined") return getDefaultCodeThemeId();
+	const stored = localStorage.getItem(CODE_THEME_KEY);
+	return isCodeThemeId(stored) ? stored : getDefaultCodeThemeId();
 }
 
-function applyTheme(theme: ThemeId) {
-  const el = document.documentElement;
-  if (theme === "zinc") {
-    delete el.dataset.theme;
-  } else {
-    el.dataset.theme = theme;
-  }
+function getStoredThemeState(): ThemeState {
+	return { codeTheme: getStoredCodeTheme() };
 }
 
-function applyMode(mode: Mode) {
-  const el = document.documentElement;
-  if (mode === "dark") {
-    el.classList.add("dark");
-  } else if (mode === "light") {
-    el.classList.remove("dark");
-  } else {
-    // system
-    const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)",
-    ).matches;
-    el.classList.toggle("dark", prefersDark);
-  }
+function emitThemeState(nextState: ThemeState) {
+	if (typeof window === "undefined") return;
+	window.dispatchEvent(
+		new CustomEvent<ThemeState>(THEME_CHANGE_EVENT, { detail: nextState }),
+	);
+}
+
+function isThemeState(value: unknown): value is ThemeState {
+	if (!value || typeof value !== "object") return false;
+	const candidate = value as Record<string, unknown>;
+	return (
+		typeof candidate.codeTheme === "string" &&
+		isCodeThemeId(candidate.codeTheme)
+	);
 }
 
 export function useTheme() {
-  const [theme, setThemeState] = useState<ThemeId>(getStoredTheme);
-  const [mode, setModeState] = useState<Mode>(getStoredMode);
+	const [themeState, setThemeState] = useState<ThemeState>(getStoredThemeState);
 
-  const setTheme = useCallback((t: ThemeId) => {
-    setThemeState(t);
-    localStorage.setItem(THEME_KEY, t);
-    applyTheme(t);
-  }, []);
+	const setCodeTheme = useCallback((codeTheme: CodeThemeId) => {
+		localStorage.setItem(CODE_THEME_KEY, codeTheme);
+		setThemeState((current) => {
+			const next = { ...current, codeTheme };
+			emitThemeState(next);
+			return next;
+		});
+	}, []);
 
-  const setMode = useCallback((m: Mode) => {
-    setModeState(m);
-    localStorage.setItem(MODE_KEY, m);
-    applyMode(m);
-  }, []);
+	// Sync between hook instances in the same tab and across tabs.
+	useEffect(() => {
+		const syncFromCustomEvent = (event: Event) => {
+			const customEvent = event as CustomEvent<unknown>;
+			if (isThemeState(customEvent.detail)) {
+				setThemeState(customEvent.detail);
+				return;
+			}
 
-  // Apply on mount
-  useEffect(() => {
-    applyTheme(theme);
-    applyMode(mode);
-  }, [theme, mode]);
+			setThemeState(getStoredThemeState());
+		};
 
-  // Listen for system preference changes when in "system" mode
-  useEffect(() => {
-    if (mode !== "system") return;
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    const handler = (e: MediaQueryListEvent) => {
-      document.documentElement.classList.toggle("dark", e.matches);
-    };
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
-  }, [mode]);
+		const syncFromStorageEvent = (event: StorageEvent) => {
+			if (event.key === CODE_THEME_KEY || event.key === null) {
+				setThemeState(getStoredThemeState());
+			}
+		};
 
-  return { theme, mode, setTheme, setMode };
+		window.addEventListener(THEME_CHANGE_EVENT, syncFromCustomEvent);
+		window.addEventListener("storage", syncFromStorageEvent);
+
+		return () => {
+			window.removeEventListener(THEME_CHANGE_EVENT, syncFromCustomEvent);
+			window.removeEventListener("storage", syncFromStorageEvent);
+		};
+	}, []);
+
+	// The selected Shiki theme controls dark/light mode.
+	useEffect(() => {
+		const isDark = isDarkCodeTheme(themeState.codeTheme);
+		document.documentElement.classList.toggle("dark", isDark);
+	}, [themeState.codeTheme]);
+
+	// Apply selected Shiki theme palette to app variables.
+	useEffect(() => {
+		let cancelled = false;
+		const isDark = isDarkCodeTheme(themeState.codeTheme);
+		import("../lib/shiki-themes")
+			.then(async ({ applyShikiAppTheme }) => {
+				if (!cancelled) {
+					await applyShikiAppTheme(themeState.codeTheme, isDark);
+				}
+			})
+			.catch(() => {
+				// Keep current CSS variables if a theme module fails to load.
+			});
+
+		return () => {
+			cancelled = true;
+		};
+	}, [themeState.codeTheme]);
+
+	return {
+		codeTheme: themeState.codeTheme,
+		setCodeTheme,
+	};
 }

@@ -2,6 +2,7 @@ export type Command =
 	| { type: "chat"; text: string }
 	| { type: "nick"; nick: string }
 	| { type: "color"; color: string }
+	| { type: "theme"; themeId: string | null }
 	| { type: "giphy"; query: string }
 	| { type: "list" }
 	| { type: "pm"; to: string; text: string }
@@ -20,6 +21,15 @@ export function parseInput(input: string): Command {
 	if (trimmed.startsWith("/color ")) {
 		const color = trimmed.slice(7).trim();
 		return { type: "color", color };
+	}
+
+	if (trimmed === "/theme") {
+		return { type: "theme", themeId: null };
+	}
+
+	if (trimmed.startsWith("/theme ")) {
+		const themeId = trimmed.slice(7).trim();
+		return { type: "theme", themeId: themeId || null };
 	}
 
 	if (trimmed.startsWith("/giphy ")) {

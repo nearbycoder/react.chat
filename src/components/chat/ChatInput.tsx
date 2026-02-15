@@ -1,14 +1,24 @@
-import { useState, useCallback, useMemo, useRef, useEffect, type KeyboardEvent } from "react";
-import { Button } from "../ui/button";
 import { Send } from "lucide-react";
-import { parseInput } from "../../lib/commands";
-import { useChatState, useChatDispatch } from "../../hooks/useChatStore";
-import { useMessageHistory } from "../../hooks/useMessageHistory";
+import {
+	type KeyboardEvent,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import type { ClientMessage } from "../../../server/lib/message-types";
+import { useChatDispatch, useChatState } from "../../hooks/useChatStore";
+import { useMessageHistory } from "../../hooks/useMessageHistory";
+import { useTheme } from "../../hooks/useTheme";
+import { parseInput } from "../../lib/commands";
+import { codeThemes, getCodeThemeById, isCodeThemeId } from "../../lib/themes";
+import { Button } from "../ui/button";
 
 const COMMANDS = [
 	{ cmd: "/nick", args: "<name>", desc: "Change nickname" },
 	{ cmd: "/color", args: "<color>", desc: "Change message color" },
+	{ cmd: "/theme", args: "<theme>", desc: "Change app theme" },
 	{ cmd: "/pm", args: "@user message", desc: "Private message" },
 	{ cmd: "/giphy", args: "<query>", desc: "Send a GIF" },
 	{ cmd: "/list", args: "", desc: "Refresh user list" },
@@ -16,6 +26,15 @@ const COMMANDS = [
 	{ cmd: "/help", args: "", desc: "Show all commands" },
 	{ cmd: "!code", args: "<text>", desc: "Code block" },
 ];
+
+interface CompletionItem {
+	id: string;
+	insertText: string;
+	primary: string;
+	secondary?: string;
+	monospace?: boolean;
+	desc: string;
+}
 
 interface ChatInputProps {
 	onSend: (msg: ClientMessage) => void;
@@ -26,36 +45,65 @@ export function ChatInput({ onSend }: ChatInputProps) {
 	const [selectedIndex, setSelectedIndex] = useState(0);
 	const { connected } = useChatState();
 	const dispatch = useChatDispatch();
+	const { setCodeTheme } = useTheme();
 	const { navigateHistory, resetHistory } = useMessageHistory();
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 
 	// Auto-resize textarea
 	useEffect(() => {
+		void text;
 		const el = textareaRef.current;
 		if (!el) return;
 		el.style.height = "0";
 		el.style.height = `${Math.min(el.scrollHeight, 150)}px`;
 	}, [text]);
 
-	const filtered = useMemo(() => {
+	const completionItems = useMemo<CompletionItem[]>(() => {
 		const firstLine = text.split("\n")[0];
 		if (!firstLine.startsWith("/") && !firstLine.startsWith("!")) return [];
+
+		const normalized = firstLine.toLowerCase();
+		if (normalized.startsWith("/theme ")) {
+			const query = firstLine.slice("/theme ".length).trim().toLowerCase();
+			if (query.includes(" ")) return [];
+
+			return codeThemes
+				.filter(
+					(theme) =>
+						query.length === 0 ||
+						theme.id.toLowerCase().includes(query) ||
+						theme.label.toLowerCase().includes(query),
+				)
+				.map((theme) => ({
+					id: `theme-${theme.id}`,
+					insertText: `/theme ${theme.id}`,
+					primary: theme.label,
+					secondary: theme.id,
+					desc: "Set app theme",
+				}));
+		}
+
 		if (firstLine.includes(" ")) return [];
-		return COMMANDS.filter((c) =>
-			c.cmd.toLowerCase().startsWith(firstLine.toLowerCase()),
-		);
+
+		return COMMANDS.filter((command) =>
+			command.cmd.toLowerCase().startsWith(normalized),
+		).map((command) => ({
+			id: command.cmd,
+			insertText: command.args ? `${command.cmd} ` : command.cmd,
+			primary: command.cmd,
+			secondary: command.args || undefined,
+			monospace: true,
+			desc: command.desc,
+		}));
 	}, [text]);
 
-	const showPopover = filtered.length > 0;
+	const showPopover = completionItems.length > 0;
 
-	const acceptCompletion = useCallback(
-		(cmd: string, args: string) => {
-			setText(args ? `${cmd} ` : cmd);
-			setSelectedIndex(0);
-			textareaRef.current?.focus();
-		},
-		[],
-	);
+	const acceptCompletion = useCallback((item: CompletionItem) => {
+		setText(item.insertText);
+		setSelectedIndex(0);
+		textareaRef.current?.focus();
+	}, []);
 
 	const handleSubmit = useCallback(() => {
 		if (!text.trim() || !connected) return;
@@ -78,6 +126,39 @@ export function ChatInput({ onSend }: ChatInputProps) {
 				break;
 			case "color":
 				onSend({ type: "color", color: command.color });
+				break;
+			case "theme":
+				if (!command.themeId) {
+					dispatch({
+						type: "server-message",
+						message: {
+							type: "error",
+							text: "Usage: /theme <theme-id>",
+						},
+					});
+					break;
+				}
+
+				if (!isCodeThemeId(command.themeId)) {
+					dispatch({
+						type: "server-message",
+						message: {
+							type: "error",
+							text: `Unknown theme "${command.themeId}". Use /theme and press Tab to browse.`,
+						},
+					});
+					break;
+				}
+
+				setCodeTheme(command.themeId);
+				dispatch({
+					type: "server-message",
+					message: {
+						type: "system",
+						text: `Theme changed to ${getCodeThemeById(command.themeId).label}.`,
+						timestamp: Date.now(),
+					},
+				});
 				break;
 			case "giphy":
 				fetch(`/api/giphy?q=${encodeURIComponent(command.query)}`)
@@ -116,35 +197,47 @@ export function ChatInput({ onSend }: ChatInputProps) {
 				onSend({ type: "pm", to: command.to, text: command.text });
 				break;
 			case "code":
-				onSend({ type: "code", text: command.text, language: command.language });
+				onSend({
+					type: "code",
+					text: command.text,
+					language: command.language,
+				});
 				break;
 		}
 
 		setText("");
 		setSelectedIndex(0);
 		resetHistory();
-	}, [text, connected, onSend, dispatch, resetHistory]);
+	}, [text, connected, onSend, dispatch, resetHistory, setCodeTheme]);
 
 	const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+		const firstLine = text.split("\n")[0];
 		if (showPopover) {
 			if (e.key === "ArrowUp") {
 				e.preventDefault();
-				setSelectedIndex((i) =>
-					i <= 0 ? filtered.length - 1 : i - 1,
-				);
+				setSelectedIndex((i) => (i <= 0 ? completionItems.length - 1 : i - 1));
 				return;
 			}
 			if (e.key === "ArrowDown") {
 				e.preventDefault();
-				setSelectedIndex((i) =>
-					i >= filtered.length - 1 ? 0 : i + 1,
-				);
+				setSelectedIndex((i) => (i >= completionItems.length - 1 ? 0 : i + 1));
 				return;
 			}
-			if (e.key === "Tab" || (e.key === "Enter" && filtered.length > 0 && !text.includes(" "))) {
+			if (e.key === "Tab" || (e.key === "Enter" && !e.shiftKey)) {
 				e.preventDefault();
-				const item = filtered[selectedIndex];
-				if (item) acceptCompletion(item.cmd, item.args);
+				const item = completionItems[selectedIndex] ?? completionItems[0];
+				if (!item) return;
+
+				if (
+					e.key === "Enter" &&
+					completionItems.length === 1 &&
+					item.insertText === firstLine
+				) {
+					handleSubmit();
+					return;
+				}
+
+				acceptCompletion(item);
 				return;
 			}
 			if (e.key === "Escape") {
@@ -181,10 +274,10 @@ export function ChatInput({ onSend }: ChatInputProps) {
 	return (
 		<div className="relative flex gap-2 p-3 border-t border-border bg-card">
 			{showPopover && (
-				<div className="absolute bottom-full left-3 right-3 mb-1 bg-popover border border-border rounded-md shadow-lg overflow-hidden z-10">
-					{filtered.map((item, i) => (
+				<div className="absolute bottom-full left-3 right-3 z-10 mb-1 max-h-64 overflow-y-auto rounded-md border border-border bg-popover shadow-lg">
+					{completionItems.map((item, i) => (
 						<button
-							key={item.cmd}
+							key={item.id}
 							type="button"
 							className={`w-full flex items-center gap-3 px-3 py-2 text-sm text-left transition-colors ${
 								i === selectedIndex
@@ -194,15 +287,19 @@ export function ChatInput({ onSend }: ChatInputProps) {
 							onMouseEnter={() => setSelectedIndex(i)}
 							onMouseDown={(e) => {
 								e.preventDefault();
-								acceptCompletion(item.cmd, item.args);
+								acceptCompletion(item);
 							}}
 						>
-							<code className="font-mono text-primary shrink-0">
-								{item.cmd}
-							</code>
-							{item.args && (
+							<span
+								className={`shrink-0 text-primary ${
+									item.monospace ? "font-mono" : "font-medium"
+								}`}
+							>
+								{item.primary}
+							</span>
+							{item.secondary && (
 								<span className="text-muted-foreground text-xs shrink-0">
-									{item.args}
+									{item.secondary}
 								</span>
 							)}
 							<span className="text-muted-foreground text-xs ml-auto truncate">
@@ -225,6 +322,7 @@ export function ChatInput({ onSend }: ChatInputProps) {
 				disabled={!connected}
 				className="flex-1 resize-none overflow-y-auto rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs outline-none placeholder:text-muted-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:border-ring disabled:cursor-not-allowed disabled:opacity-50"
 				rows={1}
+				// biome-ignore lint/a11y/noAutofocus: Chat UX expects immediate keyboard focus on load.
 				autoFocus
 			/>
 			<Button

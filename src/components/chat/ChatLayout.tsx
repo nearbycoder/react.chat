@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { MessageList } from "./MessageList";
-import { ChatInput } from "./ChatInput";
-import { UserSidebar } from "./UserSidebar";
-import { HelpDialog } from "./HelpDialog";
-import { ThemePicker } from "./ThemePicker";
+import type { ClientMessage } from "../../../server/lib/message-types";
 import { useChatState } from "../../hooks/useChatStore";
 import { useFavicon } from "../../hooks/useFavicon";
 import { Badge } from "../ui/badge";
-import type { ClientMessage } from "../../../server/lib/message-types";
+import { ChatInput } from "./ChatInput";
+import { HelpDialog } from "./HelpDialog";
+import { MessageList } from "./MessageList";
+import { ThemePicker } from "./ThemePicker";
+import { UserSidebar } from "./UserSidebar";
 
 interface ChatLayoutProps {
 	onSend: (msg: ClientMessage) => void;
@@ -37,7 +37,7 @@ export function ChatLayout({ onSend }: ChatLayoutProps) {
 
 			{/* Main content */}
 			<div className="flex flex-1 overflow-hidden">
-				<div className="flex flex-col flex-1 min-w-0">
+				<div className="flex min-h-0 flex-1 min-w-0 flex-col">
 					<MessageList />
 					<ChatInput onSend={onSend} />
 				</div>
