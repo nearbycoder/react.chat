@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
+  <!-- Background -->
+  <rect width="900" height="520" rx="12" fill="#0f0f11" stroke="#27272a" stroke-width="1.5"/>
+
+  <!-- Window chrome dots -->
+  <circle cx="24" cy="18" r="6" fill="#ef4444" opacity="0.8"/>
+  <circle cx="44" cy="18" r="6" fill="#eab308" opacity="0.8"/>
+  <circle cx="64" cy="18" r="6" fill="#22c55e" opacity="0.8"/>
+
+  <!-- Top bar -->
+  <rect y="36" width="900" height="44" fill="#18181b"/>
+  <line x1="0" y1="80" x2="900" y2="80" stroke="#27272a" stroke-width="1"/>
+  <text x="20" y="63" fill="#fafafa" font-size="16" font-weight="700" letter-spacing="-0.3">React Chat</text>
+  <rect x="120" y="48" width="76" height="24" rx="12" fill="none" stroke="#3f3f46" stroke-width="1"/>
+  <text x="134" y="64" fill="#a1a1aa" font-size="12">#general</text>
+
+  <!-- Theme picker icon area -->
+  <circle cx="790" cy="60" r="4" fill="#22c55e"/>
+  <text x="800" y="64" fill="#a1a1aa" font-size="13">alice</text>
+
+  <!-- Sidebar -->
+  <rect x="720" y="80" width="180" height="440" fill="#18181b"/>
+  <line x1="720" y1="80" x2="720" y2="520" stroke="#27272a" stroke-width="1"/>
+  <text x="736" y="108" fill="#a1a1aa" font-size="11" font-weight="600" letter-spacing="0.5">ONLINE — 4</text>
+
+  <!-- Sidebar users -->
+  <circle cx="744" cy="132" r="4" fill="#e74c3c"/>
+  <text x="756" y="136" fill="#fafafa" font-size="13">alice</text>
+  <circle cx="744" cy="158" r="4" fill="#3498db"/>
+  <text x="756" y="162" fill="#fafafa" font-size="13">bob</text>
+  <circle cx="744" cy="184" r="4" fill="#2ecc71"/>
+  <text x="756" y="188" fill="#fafafa" font-size="13">carol</text>
+  <circle cx="744" cy="210" r="4" fill="#9b59b6"/>
+  <text x="756" y="214" fill="#fafafa" font-size="13">dave</text>
+
+  <!-- Chat area -->
+  <!-- System message: join -->
+  <text x="20" y="108" fill="#71717a" font-size="12" font-style="italic">
+    <tspan fill="#52525b">10:30</tspan>
+    <tspan dx="8">alice joined the room</tspan>
+  </text>
+
+  <text x="20" y="132" fill="#71717a" font-size="12" font-style="italic">
+    <tspan fill="#52525b">10:30</tspan>
+    <tspan dx="8">bob joined the room</tspan>
+  </text>
+
+  <!-- Chat messages -->
+  <!-- bob -->
+  <text x="20" y="162" font-size="14">
+    <tspan fill="#52525b" font-size="11">10:31</tspan>
+    <tspan dx="6" fill="#3498db" font-weight="600">bob</tspan>
+    <tspan dx="8" fill="#fafafa">hey everyone! has anyone tried the new theme system?</tspan>
+  </text>
+
+  <!-- alice -->
+  <rect x="0" y="171" width="720" height="26" fill="#27272a" opacity="0.3" rx="0"/>
+  <text x="20" y="188" font-size="14">
+    <tspan fill="#52525b" font-size="11">10:31</tspan>
+    <tspan dx="6" fill="#e74c3c" font-weight="600">alice</tspan>
+    <tspan dx="8" fill="#fafafa">yeah! I'm using the violet theme right now, it looks great</tspan>
+  </text>
+
+  <!-- carol join -->
+  <text x="20" y="216" fill="#71717a" font-size="12" font-style="italic">
+    <tspan fill="#52525b">10:32</tspan>
+    <tspan dx="8">carol joined the room</tspan>
+  </text>
+
+  <!-- carol -->
+  <text x="20" y="244" font-size="14">
+    <tspan fill="#52525b" font-size="11">10:32</tspan>
+    <tspan dx="6" fill="#2ecc71" font-weight="600">carol</tspan>
+    <tspan dx="8" fill="#fafafa">nice! let me share a quick snippet I've been working on:</tspan>
+  </text>
+
+  <!-- Code block -->
+  <rect x="20" y="254" width="440" height="76" rx="6" fill="#0d1117"/>
+  <text x="32" y="274" font-family="Menlo,Monaco,monospace" font-size="12" fill="#c9d1d9">
+    <tspan fill="#ff7b72">function</tspan><tspan> </tspan><tspan fill="#d2a8ff">greet</tspan><tspan fill="#c9d1d9">(name: </tspan><tspan fill="#79c0ff">string</tspan><tspan fill="#c9d1d9">) {</tspan>
+  </text>
+  <text x="32" y="294" font-family="Menlo,Monaco,monospace" font-size="12">
+    <tspan fill="#c9d1d9">  </tspan><tspan fill="#ff7b72">return</tspan><tspan fill="#c9d1d9"> </tspan><tspan fill="#a5d6ff">`Hello, </tspan><tspan fill="#79c0ff">${</tspan><tspan fill="#c9d1d9">name</tspan><tspan fill="#79c0ff">}</tspan><tspan fill="#a5d6ff">!`</tspan><tspan fill="#c9d1d9">;</tspan>
+  </text>
+  <text x="32" y="314" font-family="Menlo,Monaco,monospace" font-size="12" fill="#c9d1d9">}</text>
+
+  <!-- dave join -->
+  <text x="20" y="352" fill="#71717a" font-size="12" font-style="italic">
+    <tspan fill="#52525b">10:33</tspan>
+    <tspan dx="8">dave joined the room</tspan>
+  </text>
+
+  <!-- dave -->
+  <text x="20" y="380" font-size="14">
+    <tspan fill="#52525b" font-size="11">10:33</tspan>
+    <tspan dx="6" fill="#9b59b6" font-weight="600">dave</tspan>
+    <tspan dx="8" fill="#fafafa">that's clean! btw I just set my color with /color white</tspan>
+  </text>
+
+  <!-- bob -->
+  <text x="20" y="408" font-size="14">
+    <tspan fill="#52525b" font-size="11">10:34</tspan>
+    <tspan dx="6" fill="#3498db" font-weight="600">bob</tspan>
+    <tspan dx="8" fill="#fafafa">the code blocks with syntax highlighting are so useful</tspan>
+  </text>
+
+  <!-- alice -->
+  <rect x="0" y="417" width="720" height="26" fill="#27272a" opacity="0.3" rx="0"/>
+  <text x="20" y="434" font-size="14">
+    <tspan fill="#52525b" font-size="11">10:34</tspan>
+    <tspan dx="6" fill="#e74c3c" font-weight="600">alice</tspan>
+    <tspan dx="8" fill="#fafafa">agreed! and the colors persist after refresh now too</tspan>
+  </text>
+
+  <!-- Input area -->
+  <rect y="476" width="720" height="44" fill="#18181b"/>
+  <line x1="0" y1="476" x2="720" y2="476" stroke="#27272a" stroke-width="1"/>
+  <rect x="12" y="486" width="640" height="28" rx="6" fill="#09090b" stroke="#27272a" stroke-width="1"/>
+  <text x="24" y="504" fill="#52525b" font-size="13">Type a message or / for commands...</text>
+
+  <!-- Send button -->
+  <rect x="664" y="486" width="40" height="28" rx="6" fill="#fafafa"/>
+  <polygon points="680,494 690,500 680,506" fill="#09090b"/>
+
+  <!-- Bottom-right rounded corner for sidebar -->
+  <rect x="720" y="476" width="180" height="44" fill="#18181b"/>
+</svg>

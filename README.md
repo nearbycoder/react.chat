@@ -2,6 +2,8 @@
 
 A real-time ephemeral chat application. No accounts, no message history — just instant WebSocket-powered conversation.
 
+![React Chat Preview](public/preview.svg)
+
 ## Features
 
 - **Ephemeral rooms** — create or join any room by name, messages exist only while the server is running
