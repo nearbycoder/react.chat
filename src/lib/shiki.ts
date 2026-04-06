@@ -53,7 +53,7 @@ const languageAliases: Record<string, string> = {
 	sh: "bash",
 	txt: "text",
 	yml: "yaml",
-	csharp: "csharp"
+	csharp: "csharp",
 };
 
 let highlighterPromise: Promise<HighlighterCore> | null = null;
