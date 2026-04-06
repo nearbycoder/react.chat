@@ -1,4 +1,5 @@
 import bash from "@shikijs/langs/bash";
+import csharp from "@shikijs/langs/csharp"
 import css from "@shikijs/langs/css";
 import html from "@shikijs/langs/html";
 import javascript from "@shikijs/langs/javascript";
@@ -35,6 +36,7 @@ const supportedLanguages = new Set([
 	"typescript",
 	"xml",
 	"yaml",
+	"csharp"
 ]);
 
 const languageAliases: Record<string, string> = {
@@ -51,6 +53,7 @@ const languageAliases: Record<string, string> = {
 	sh: "bash",
 	txt: "text",
 	yml: "yaml",
+	csharp: "csharp",
 };
 
 let highlighterPromise: Promise<HighlighterCore> | null = null;
@@ -106,6 +109,7 @@ async function getHighlighter(): Promise<HighlighterCore> {
 			...typescript,
 			...xml,
 			...yaml,
+			...csharp,
 		],
 		themes: [],
 		engine: createJavaScriptRegexEngine(),
