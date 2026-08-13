@@ -1,7 +1,7 @@
 import { Users } from "lucide-react";
 import { useState } from "react";
 import type { ClientMessage } from "../../../server/lib/message-types";
-import { useChatState } from "../../hooks/useChatStore";
+import { type ChatMessage, useChatState } from "../../hooks/useChatStore";
 import { useFavicon } from "../../hooks/useFavicon";
 import { Badge } from "../ui/badge";
 import { ChatInput } from "./ChatInput";
@@ -17,6 +17,7 @@ interface ChatLayoutProps {
 export function ChatLayout({ onSend }: ChatLayoutProps) {
 	const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 	const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+	const [replyTo, setReplyTo] = useState<ChatMessage | null>(null);
 	const { room, nick, connected } = useChatState();
 	useFavicon();
 
@@ -52,8 +53,12 @@ export function ChatLayout({ onSend }: ChatLayoutProps) {
 			{/* Main content */}
 			<div className="flex min-h-0 flex-1 overflow-hidden">
 				<div className="flex min-h-0 min-w-0 flex-1 flex-col">
-					<MessageList />
-					<ChatInput onSend={onSend} />
+					<MessageList onReply={setReplyTo} />
+					<ChatInput
+						onSend={onSend}
+						replyTo={replyTo}
+						onCancelReply={() => setReplyTo(null)}
+					/>
 				</div>
 				<UserSidebar
 					collapsed={sidebarCollapsed}

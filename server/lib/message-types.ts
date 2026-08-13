@@ -1,7 +1,7 @@
 // Client -> Server message types
 export type ClientMessage =
 	| { type: "join"; room: string; nick?: string; color?: string }
-	| { type: "chat"; text: string }
+	| { type: "chat"; text: string; replyTo?: string }
 	| { type: "nick"; nick: string }
 	| { type: "color"; color: string }
 	| { type: "giphy"; url: string; query: string }
@@ -13,10 +13,12 @@ export type ClientMessage =
 export type ServerMessage =
 	| {
 			type: "chat";
+			id: string;
 			nick: string;
 			text: string;
 			color: string;
 			timestamp: number;
+			replyTo?: string;
 	  }
 	| { type: "system"; text: string; timestamp: number }
 	| {

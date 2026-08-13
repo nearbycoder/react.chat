@@ -1,11 +1,11 @@
 import {
 	createContext,
-	useContext,
-	useReducer,
+	createElement,
 	type Dispatch,
 	type ReactNode,
+	useContext,
+	useReducer,
 } from "react";
-import { createElement } from "react";
 import type { ServerMessage, UserInfo } from "../../server/lib/message-types";
 
 export interface ChatMessage {
@@ -21,6 +21,7 @@ export interface ChatMessage {
 	language?: string;
 	oldNick?: string;
 	newNick?: string;
+	replyTo?: string;
 	timestamp: number;
 }
 
@@ -58,9 +59,11 @@ function serverMessageToChatMessage(msg: ServerMessage): ChatMessage {
 		case "chat":
 			return {
 				...base,
+				id: msg.id,
 				nick: msg.nick,
 				text: msg.text,
 				color: msg.color,
+				replyTo: msg.replyTo,
 				timestamp: msg.timestamp,
 			};
 		case "system":
@@ -117,8 +120,7 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
 				case "user-list": {
 					// Pick up our own color from the user list
 					const me = msg.users.find(
-						(u) =>
-							u.nick.toLowerCase() === state.nick.toLowerCase(),
+						(u) => u.nick.toLowerCase() === state.nick.toLowerCase(),
 					);
 					const newColor = me?.color ?? state.color;
 					if (newColor && typeof window !== "undefined") {
@@ -166,8 +168,7 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
 					const chatMsg = serverMessageToChatMessage(msg);
 					chatMsg.text = `${msg.oldNick} is now ${msg.newNick}`;
 					chatMsg.type = "system";
-					const isMe =
-						state.nick.toLowerCase() === msg.oldNick.toLowerCase();
+					const isMe = state.nick.toLowerCase() === msg.oldNick.toLowerCase();
 					const newNick = isMe ? msg.newNick : state.nick;
 					if (isMe && typeof window !== "undefined") {
 						localStorage.setItem("react-chat-nick", msg.newNick);
@@ -185,9 +186,7 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
 					return {
 						...state,
 						messages: [...state.messages, chatMsg],
-						unreadCount: isActive
-							? state.unreadCount
-							: state.unreadCount + 1,
+						unreadCount: isActive ? state.unreadCount : state.unreadCount + 1,
 					};
 				}
 			}

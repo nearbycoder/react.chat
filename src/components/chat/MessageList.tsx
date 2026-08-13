@@ -1,16 +1,23 @@
-import { useEffect, useRef } from "react";
-import { useChatState } from "../../hooks/useChatStore";
+import { useEffect, useMemo } from "react";
+import { type ChatMessage, useChatState } from "../../hooks/useChatStore";
+import { buildMessageThreads } from "../../lib/chat-threads";
 import { ScrollArea } from "../ui/scroll-area";
 import { MessageItem } from "./MessageItem";
 
-export function MessageList() {
+interface MessageListProps {
+	onReply: (message: ChatMessage) => void;
+}
+
+export function MessageList({ onReply }: MessageListProps) {
 	const { messages, nick } = useChatState();
-	const bottomRef = useRef<HTMLDivElement>(null);
+	const threads = useMemo(() => buildMessageThreads(messages), [messages]);
 	const lastMessageId = messages[messages.length - 1]?.id;
 
 	useEffect(() => {
 		if (!lastMessageId) return;
-		bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+		document
+			.getElementById(`message-${lastMessageId}`)
+			?.scrollIntoView({ behavior: "smooth", block: "nearest" });
 	}, [lastMessageId]);
 
 	return (
@@ -21,10 +28,24 @@ export function MessageList() {
 						No messages yet. Say hello!
 					</div>
 				)}
-				{messages.map((msg) => (
-					<MessageItem key={msg.id} message={msg} currentNick={nick} />
+				{threads.map((thread) => (
+					<div key={thread.message.id}>
+						<MessageItem
+							message={thread.message}
+							currentNick={nick}
+							onReply={() => onReply(thread.message)}
+						/>
+						{thread.replies.map((reply) => (
+							<MessageItem
+								key={reply.id}
+								message={reply}
+								currentNick={nick}
+								isReply
+								onReply={() => onReply(thread.message)}
+							/>
+						))}
+					</div>
 				))}
-				<div ref={bottomRef} />
 			</div>
 		</ScrollArea>
 	);
