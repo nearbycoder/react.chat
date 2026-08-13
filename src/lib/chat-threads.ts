@@ -16,19 +16,39 @@ export function buildMessageThreads<T extends ThreadableMessage>(
 	);
 	const repliesByRoot = new Map<string, T[]>();
 	const rootIds = new Set<string>();
+	const resolvedRoots = new Map<string, string>();
 
 	function getRootId(message: T): string {
+		const path: T[] = [];
+		const seen = new Set<string>();
 		let current = message;
-		const seen = new Set([message.id]);
+		let rootId: string;
 
-		while (current.replyTo) {
-			const parent = messagesById.get(current.replyTo);
-			if (!parent || seen.has(parent.id)) return message.id;
-			seen.add(parent.id);
+		while (true) {
+			const resolved = resolvedRoots.get(current.id);
+			if (resolved) {
+				rootId = resolved;
+				break;
+			}
+			if (seen.has(current.id)) {
+				rootId = message.id;
+				break;
+			}
+
+			seen.add(current.id);
+			path.push(current);
+			const parent = current.replyTo
+				? messagesById.get(current.replyTo)
+				: undefined;
+			if (!parent) {
+				rootId = current.replyTo ? message.id : current.id;
+				break;
+			}
 			current = parent;
 		}
 
-		return current.id;
+		for (const visited of path) resolvedRoots.set(visited.id, rootId);
+		return rootId;
 	}
 
 	for (const message of messages) {

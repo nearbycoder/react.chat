@@ -24,9 +24,26 @@ describe("buildMessageThreads", () => {
 		]);
 	});
 
-	it("keeps replies with unavailable roots in the main stream", () => {
-		const message = { id: "orphan", replyTo: "missing" };
+	it("continues a thread from a visible reply whose root is unavailable", () => {
+		const orphan = { id: "orphan", replyTo: "missing" };
+		const continuedReply = { id: "continued", replyTo: "orphan" };
 
-		expect(buildMessageThreads([message])).toEqual([{ message, replies: [] }]);
+		expect(buildMessageThreads([orphan, continuedReply])).toEqual([
+			{ message: orphan, replies: [continuedReply] },
+		]);
+	});
+
+	it("groups long reply chains without repeatedly walking every ancestor", () => {
+		const messages: TestMessage[] = [{ id: "message-0" }];
+		for (let index = 1; index < 10_000; index++) {
+			messages.push({
+				id: `message-${index}`,
+				replyTo: `message-${index - 1}`,
+			});
+		}
+
+		const threads = buildMessageThreads(messages);
+		expect(threads).toHaveLength(1);
+		expect(threads[0].replies).toHaveLength(9_999);
 	});
 });

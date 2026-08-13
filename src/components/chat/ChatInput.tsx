@@ -132,7 +132,7 @@ export function ChatInput({ onSend, replyTo, onCancelReply }: ChatInputProps) {
 				onSend({
 					type: "chat",
 					text: command.text,
-					replyTo: replyTo?.replyTo ?? replyTo?.id,
+					replyTo: replyTo?.id,
 				});
 				break;
 			case "nick":
