@@ -1,4 +1,4 @@
-import { Send } from "lucide-react";
+import { Send, X } from "lucide-react";
 import {
 	type KeyboardEvent,
 	useCallback,
@@ -8,7 +8,11 @@ import {
 	useState,
 } from "react";
 import type { ClientMessage } from "../../../server/lib/message-types";
-import { useChatDispatch, useChatState } from "../../hooks/useChatStore";
+import {
+	type ChatMessage,
+	useChatDispatch,
+	useChatState,
+} from "../../hooks/useChatStore";
 import { useMessageHistory } from "../../hooks/useMessageHistory";
 import { useTheme } from "../../hooks/useTheme";
 import { parseInput } from "../../lib/commands";
@@ -38,9 +42,11 @@ interface CompletionItem {
 
 interface ChatInputProps {
 	onSend: (msg: ClientMessage) => void;
+	replyTo: ChatMessage | null;
+	onCancelReply: () => void;
 }
 
-export function ChatInput({ onSend }: ChatInputProps) {
+export function ChatInput({ onSend, replyTo, onCancelReply }: ChatInputProps) {
 	const [text, setText] = useState("");
 	const [selectedIndex, setSelectedIndex] = useState(0);
 	const { connected } = useChatState();
@@ -48,6 +54,10 @@ export function ChatInput({ onSend }: ChatInputProps) {
 	const { setCodeTheme } = useTheme();
 	const { navigateHistory, resetHistory } = useMessageHistory();
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+	useEffect(() => {
+		if (replyTo) textareaRef.current?.focus();
+	}, [replyTo]);
 
 	// Auto-resize textarea
 	useEffect(() => {
@@ -119,7 +129,11 @@ export function ChatInput({ onSend }: ChatInputProps) {
 				dispatch({ type: "toggle-help" });
 				break;
 			case "chat":
-				onSend({ type: "chat", text: command.text });
+				onSend({
+					type: "chat",
+					text: command.text,
+					replyTo: replyTo?.id,
+				});
 				break;
 			case "nick":
 				onSend({ type: "nick", nick: command.nick });
@@ -208,7 +222,17 @@ export function ChatInput({ onSend }: ChatInputProps) {
 		setText("");
 		setSelectedIndex(0);
 		resetHistory();
-	}, [text, connected, onSend, dispatch, resetHistory, setCodeTheme]);
+		onCancelReply();
+	}, [
+		text,
+		connected,
+		onSend,
+		dispatch,
+		resetHistory,
+		setCodeTheme,
+		replyTo,
+		onCancelReply,
+	]);
 
 	const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
 		const firstLine = text.split("\n")[0];
@@ -272,7 +296,23 @@ export function ChatInput({ onSend }: ChatInputProps) {
 	};
 
 	return (
-		<div className="relative flex gap-1.5 border-t border-border bg-card p-2 sm:gap-2 sm:p-3">
+		<div className="relative border-t border-border bg-card p-2 sm:p-3">
+			{replyTo && (
+				<div className="mb-2 flex items-center gap-2 rounded-md border border-border bg-muted/50 px-2.5 py-1.5 text-xs text-muted-foreground">
+					<span className="shrink-0 font-medium text-foreground">
+						Replying to {replyTo.nick}
+					</span>
+					<span className="truncate">{replyTo.text}</span>
+					<button
+						type="button"
+						onClick={onCancelReply}
+						className="ml-auto rounded-sm p-0.5 transition-colors hover:bg-accent hover:text-accent-foreground"
+						aria-label="Cancel reply"
+					>
+						<X className="h-3.5 w-3.5" />
+					</button>
+				</div>
+			)}
 			{showPopover && (
 				<div className="absolute bottom-full left-2 right-2 z-10 mb-1 max-h-[40vh] overflow-y-auto rounded-md border border-border bg-popover shadow-lg sm:left-3 sm:right-3 sm:max-h-64">
 					{completionItems.map((item, i) => (
@@ -309,30 +349,34 @@ export function ChatInput({ onSend }: ChatInputProps) {
 					))}
 				</div>
 			)}
-			<textarea
-				ref={textareaRef}
-				value={text}
-				onChange={(e) => handleChange(e.target.value)}
-				onKeyDown={handleKeyDown}
-				placeholder={
-					connected
-						? "Message or /command... (Shift+Enter for newline)"
-						: "Connecting..."
-				}
-				disabled={!connected}
-				className="min-h-10 flex-1 resize-none overflow-y-auto rounded-md border border-input bg-transparent px-2.5 py-2 text-sm shadow-xs outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 sm:px-3 sm:text-base"
-				rows={1}
-				// biome-ignore lint/a11y/noAutofocus: Chat UX expects immediate keyboard focus on load.
-				autoFocus
-			/>
-			<Button
-				onClick={handleSubmit}
-				disabled={!connected || !text.trim()}
-				size="icon"
-				className="h-10 w-10 self-end"
-			>
-				<Send className="h-4 w-4" />
-			</Button>
+			<div className="flex gap-1.5 sm:gap-2">
+				<textarea
+					ref={textareaRef}
+					value={text}
+					onChange={(e) => handleChange(e.target.value)}
+					onKeyDown={handleKeyDown}
+					placeholder={
+						connected
+							? replyTo
+								? `Reply to ${replyTo.nick}...`
+								: "Message or /command... (Shift+Enter for newline)"
+							: "Connecting..."
+					}
+					disabled={!connected}
+					className="min-h-10 flex-1 resize-none overflow-y-auto rounded-md border border-input bg-transparent px-2.5 py-2 text-sm shadow-xs outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 sm:px-3 sm:text-base"
+					rows={1}
+					// biome-ignore lint/a11y/noAutofocus: Chat UX expects immediate keyboard focus on load.
+					autoFocus
+				/>
+				<Button
+					onClick={handleSubmit}
+					disabled={!connected || !text.trim()}
+					size="icon"
+					className="h-10 w-10 self-end"
+				>
+					<Send className="h-4 w-4" />
+				</Button>
+			</div>
 		</div>
 	);
 }

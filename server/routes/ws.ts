@@ -1,13 +1,14 @@
+import { randomUUID } from "node:crypto";
 import { defineWebSocketHandler } from "h3";
 import type { ClientMessage, ServerMessage } from "../lib/message-types";
 import {
 	addUser,
-	removeUser,
-	getUser,
-	changeNick,
 	changeColor,
-	getRoomUsers,
+	changeNick,
 	findPeerByNick,
+	getRoomUsers,
+	getUser,
+	removeUser,
 } from "../lib/room-manager";
 
 function send(peer: { send: (data: string) => void }, msg: ServerMessage) {
@@ -15,7 +16,10 @@ function send(peer: { send: (data: string) => void }, msg: ServerMessage) {
 }
 
 function broadcast(
-	peer: { publish: (channel: string, data: string) => void; send: (data: string) => void },
+	peer: {
+		publish: (channel: string, data: string) => void;
+		send: (data: string) => void;
+	},
 	channel: string,
 	msg: ServerMessage,
 ) {
@@ -42,10 +46,13 @@ export default defineWebSocketHandler({
 			// Leave old room if any
 			const existing = getUser(peer.id);
 			if (existing) {
-				peer.publish(`room:${existing.room}`, JSON.stringify({
-					type: "user-left",
-					nick: existing.nick,
-				} satisfies ServerMessage));
+				peer.publish(
+					`room:${existing.room}`,
+					JSON.stringify({
+						type: "user-left",
+						nick: existing.nick,
+					} satisfies ServerMessage),
+				);
 				peer.unsubscribe(`room:${existing.room}`);
 				peer.unsubscribe(`pm:${peer.id}`);
 				removeUser(peer.id);
@@ -89,10 +96,12 @@ export default defineWebSocketHandler({
 			case "chat":
 				broadcast(peer, channel, {
 					type: "chat",
+					id: randomUUID(),
 					nick: user.nick,
 					text: msg.text,
 					color: user.color,
 					timestamp: Date.now(),
+					replyTo: typeof msg.replyTo === "string" ? msg.replyTo : undefined,
 				});
 				break;
 

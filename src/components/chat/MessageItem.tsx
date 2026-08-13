@@ -1,9 +1,12 @@
+import { Reply } from "lucide-react";
 import type { ChatMessage } from "../../hooks/useChatStore";
 import { CodeBlock } from "./CodeBlock";
 
 interface MessageItemProps {
 	message: ChatMessage;
 	currentNick: string;
+	isReply?: boolean;
+	onReply?: () => void;
 }
 
 function formatTime(ts: number): string {
@@ -13,13 +16,22 @@ function formatTime(ts: number): string {
 	});
 }
 
-export function MessageItem({ message, currentNick }: MessageItemProps) {
+export function MessageItem({
+	message,
+	currentNick,
+	isReply = false,
+	onReply,
+}: MessageItemProps) {
 	const time = formatTime(message.timestamp);
+	const elementId = `message-${message.id}`;
 
 	switch (message.type) {
 		case "system":
 			return (
-				<div className="animate-in px-3 py-1 text-sm text-muted-foreground italic duration-200 fade-in slide-in-from-bottom-1 sm:px-4">
+				<div
+					id={elementId}
+					className="animate-in px-3 py-1 text-sm text-muted-foreground italic duration-200 fade-in slide-in-from-bottom-1 sm:px-4"
+				>
 					<span className="opacity-60 mr-2">{time}</span>
 					{message.text}
 				</div>
@@ -27,7 +39,10 @@ export function MessageItem({ message, currentNick }: MessageItemProps) {
 
 		case "error":
 			return (
-				<div className="animate-in px-3 py-1 text-sm text-destructive-foreground duration-200 fade-in slide-in-from-bottom-1 sm:px-4">
+				<div
+					id={elementId}
+					className="animate-in px-3 py-1 text-sm text-destructive-foreground duration-200 fade-in slide-in-from-bottom-1 sm:px-4"
+				>
 					<span className="opacity-60 mr-2">{time}</span>
 					{message.text}
 				</div>
@@ -37,7 +52,8 @@ export function MessageItem({ message, currentNick }: MessageItemProps) {
 			const isMe = message.nick?.toLowerCase() === currentNick.toLowerCase();
 			return (
 				<div
-					className={`animate-in px-3 py-1 transition-colors duration-200 fade-in slide-in-from-bottom-1 hover:bg-accent/30 sm:px-4 ${isMe ? "bg-accent/10" : ""}`}
+					id={elementId}
+					className={`group animate-in py-1 transition-colors duration-200 fade-in slide-in-from-bottom-1 hover:bg-accent/30 ${isReply ? "ml-6 border-l-2 border-border px-3 sm:ml-10 sm:px-4" : "px-3 sm:px-4"} ${isMe ? "bg-accent/10" : ""}`}
 				>
 					<span className="opacity-60 text-xs mr-2">{time}</span>
 					<span className="font-semibold mr-2" style={{ color: message.color }}>
@@ -46,6 +62,17 @@ export function MessageItem({ message, currentNick }: MessageItemProps) {
 					<span className="text-foreground break-words whitespace-pre-wrap">
 						{message.text}
 					</span>
+					{onReply && (
+						<button
+							type="button"
+							onClick={onReply}
+							className="ml-2 inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-muted-foreground opacity-60 transition-colors hover:bg-accent hover:text-accent-foreground sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100"
+							aria-label={`Reply to ${message.nick}`}
+						>
+							<Reply className="h-3 w-3" />
+							Reply
+						</button>
+					)}
 				</div>
 			);
 		}
@@ -54,7 +81,10 @@ export function MessageItem({ message, currentNick }: MessageItemProps) {
 			const isSender =
 				message.from?.toLowerCase() === currentNick.toLowerCase();
 			return (
-				<div className="animate-in border-l-2 border-purple-500 bg-purple-500/10 px-3 py-1 duration-200 fade-in slide-in-from-bottom-1 sm:px-4">
+				<div
+					id={elementId}
+					className="animate-in border-l-2 border-purple-500 bg-purple-500/10 px-3 py-1 duration-200 fade-in slide-in-from-bottom-1 sm:px-4"
+				>
 					<span className="opacity-60 text-xs mr-2">{time}</span>
 					<span className="text-purple-400 font-semibold text-sm mr-1">
 						[PM]
@@ -69,7 +99,10 @@ export function MessageItem({ message, currentNick }: MessageItemProps) {
 
 		case "giphy":
 			return (
-				<div className="animate-in px-3 py-2 duration-200 fade-in slide-in-from-bottom-1 sm:px-4">
+				<div
+					id={elementId}
+					className="animate-in px-3 py-2 duration-200 fade-in slide-in-from-bottom-1 sm:px-4"
+				>
 					<span className="opacity-60 text-xs mr-2">{time}</span>
 					<span className="font-semibold mr-2" style={{ color: message.color }}>
 						{message.nick}
@@ -88,7 +121,10 @@ export function MessageItem({ message, currentNick }: MessageItemProps) {
 
 		case "code":
 			return (
-				<div className="animate-in px-3 py-1 duration-200 fade-in slide-in-from-bottom-1 sm:px-4">
+				<div
+					id={elementId}
+					className="animate-in px-3 py-1 duration-200 fade-in slide-in-from-bottom-1 sm:px-4"
+				>
 					<span className="opacity-60 text-xs mr-2">{time}</span>
 					<span className="font-semibold mr-2" style={{ color: message.color }}>
 						{message.nick}
